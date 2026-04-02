@@ -4,6 +4,8 @@ import { FaGithub, FaExternalLinkAlt, FaFilter } from 'react-icons/fa';
 import axios from 'axios';
 import './Projects.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -19,11 +21,14 @@ const Projects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/projects');
-      setProjects(response.data.data);
-      setFilteredProjects(response.data.data);
+      const response = await axios.get(`${API_URL}/api/projects`);
+      const data = response.data.data || [];
+      setProjects(data);
+      setFilteredProjects(data);
     } catch (error) {
       console.error('Error fetching projects:', error);
+      setProjects([]);
+      setFilteredProjects([]);
     } finally {
       setLoading(false);
     }
@@ -42,15 +47,8 @@ const Projects = () => {
     <div className="projects-page">
       <section className="projects-header section">
         <div className="container">
-          <motion.div
-            className="header-content"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="page-title">
-              My Projects<span className="title-dot">.</span>
-            </h1>
+          <motion.div className="header-content" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <h1 className="page-title">My Projects<span className="title-dot">.</span></h1>
             <p className="page-description">
               A collection of web applications I've built using the MERN stack and other modern technologies.
               Each project showcases different aspects of full-stack development.
@@ -61,13 +59,7 @@ const Projects = () => {
 
       <section className="projects-content section">
         <div className="container">
-          {/* Filters */}
-          <motion.div
-            className="filter-bar"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div className="filter-bar" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <div className="filter-label">
               <FaFilter />
               <span>Filter by:</span>
@@ -85,7 +77,6 @@ const Projects = () => {
             </div>
           </motion.div>
 
-          {/* Projects Grid */}
           {loading ? (
             <div className="loading-container">
               <div className="spinner"></div>
@@ -110,15 +101,10 @@ const Projects = () => {
 
 const ProjectCard = ({ project, index }) => {
   return (
-    <motion.div
-      className="project-detail-card card"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-    >
+    <motion.div className="project-detail-card card" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }}>
       <div className="project-header">
         <div className="project-image">
-          <img src={project.imageUrl} alt={project.title} />
+          {project.imageUrl && <img src={project.imageUrl} alt={project.title} />}
           <div className="image-overlay"></div>
         </div>
         <span className="project-badge">{project.category}</span>
@@ -142,7 +128,7 @@ const ProjectCard = ({ project, index }) => {
         <div className="project-technologies">
           <h4>Technologies:</h4>
           <div className="tech-list">
-            {project.technologies.map((tech, i) => (
+            {(project.technologies || []).map((tech, i) => (
               <span key={i} className="tech-badge">{tech}</span>
             ))}
           </div>
@@ -150,22 +136,12 @@ const ProjectCard = ({ project, index }) => {
 
         <div className="project-actions">
           {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline"
-            >
+            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline">
               <FaGithub /> GitHub
             </a>
           )}
           {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
               <FaExternalLinkAlt /> Live Demo
             </a>
           )}
