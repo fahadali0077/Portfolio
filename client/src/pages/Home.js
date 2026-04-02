@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
-import { FaGithub, FaLinkedin, FaArrowRight, FaCode, FaDatabase, FaTools } from 'react-icons/fa';
+import { FaGithub, FaArrowRight, FaCode, FaDatabase, FaTools } from 'react-icons/fa';
 import { useInView } from 'react-intersection-observer';
 import axios from 'axios';
 import './Home.css';
@@ -55,7 +55,7 @@ const Home = () => {
               >
                 Hi, I'm
               </motion.p>
-              
+
               <motion.h1
                 className="hero-title"
                 initial={{ opacity: 0, y: 20 }}
@@ -125,7 +125,7 @@ const Home = () => {
                 </div>
                 <div className="window-content">
                   <pre className="code">
-{`const developer = {
+                    {`const developer = {
   name: "Fahad Ali",
   role: "Full-Stack Developer",
   stack: ["MongoDB", "Express", 
@@ -150,7 +150,7 @@ const Home = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="section-title">About Me</h2>
-            
+
             <div className="about-content">
               <div className="about-text">
                 <p>
@@ -194,7 +194,7 @@ const Home = () => {
       <section className="skills section">
         <div className="container">
           <h2 className="section-title">Technical Skills</h2>
-          
+
           <div className="skills-grid">
             {Object.keys(skills).length > 0 && (
               <>
@@ -318,12 +318,12 @@ const ProjectCard = ({ project, index }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="project-info">
         <span className="project-category">{project.category}</span>
         <h3 className="project-title">{project.title}</h3>
         <p className="project-description">{project.description}</p>
-        
+
         <div className="project-tech">
           {project.technologies.slice(0, 3).map((tech, i) => (
             <span key={i} className="tech-tag">{tech}</span>
