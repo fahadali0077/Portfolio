@@ -120,7 +120,7 @@ const Home = () => {
                 <p>I focus on writing clean, efficient code and creating intuitive user interfaces. Whether it's designing a responsive frontend or architecting a robust backend, I bring dedication and attention to detail to every project.</p>
               </div>
               <div className="about-stats">
-                <div className="stat-card"><h3 className="stat-number gradient-text">10+</h3><p className="stat-label">Projects Completed</p></div>
+                <div className="stat-card"><h3 className="stat-number gradient-text">4+</h3><p className="stat-label">Projects Completed</p></div>
                 <div className="stat-card"><h3 className="stat-number gradient-text">2+</h3><p className="stat-label">Years Experience</p></div>
                 <div className="stat-card"><h3 className="stat-number gradient-text">100%</h3><p className="stat-label">Client Satisfaction</p></div>
               </div>
