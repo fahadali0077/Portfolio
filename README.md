@@ -367,8 +367,8 @@ This project is open source and available under the [MIT License](LICENSE).
 **Fahad Ali**
 - Email: fahadj698@gmail.com
 - Phone: +92-309-9639354
-- LinkedIn: [Fahad-Ali](https://linkedin.com/in/Fahad-Ali)
-- GitHub: [Fahad-Ali](https://github.com/Fahad-Ali)
+- LinkedIn: [Fahad-Ali](https://www.linkedin.com/in/fahad-ali-840a093a8)
+- GitHub: [Fahad-Ali](https://github.com/fahadali0077)
 
 ## 🙏 Acknowledgments
 
