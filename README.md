@@ -192,7 +192,7 @@ Project Schema:
   githubUrl: String,
   liveUrl: String,
   imageUrl: String,
-  category: String,  // 'Full-Stack', 'Frontend', 'Backend', 'WordPress'
+  category: String,  // 'Full-Stack', 'Frontend', 'Backend', 'AI,ML'
   featured: Boolean,
   order: Number
 }

@@ -12,7 +12,7 @@ const Projects = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [loading, setLoading] = useState(true);
 
-  const categories = ['All', 'Full-Stack', 'Frontend', 'Backend', 'WordPress'];
+  const categories = ['All', 'Full-Stack', 'Frontend', 'Backend', 'AI,ML'];
 
   useEffect(() => {
     fetchProjects();
