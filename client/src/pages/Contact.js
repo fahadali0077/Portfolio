@@ -1,50 +1,92 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaGithub, FaLinkedin } from 'react-icons/fa';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaGithub, FaLinkedin, FaCheckCircle, FaExclamationCircle, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
 import './Contact.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
 
+const validate = (formData) => {
+  const errors = {};
+  if (!formData.name.trim()) errors.name = 'Name is required';
+  else if (formData.name.trim().length < 2) errors.name = 'Name must be at least 2 characters';
+
+  if (!formData.email.trim()) errors.email = 'Email is required';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Please enter a valid email address';
+
+  if (!formData.subject.trim()) errors.subject = 'Subject is required';
+  else if (formData.subject.trim().length < 3) errors.subject = 'Subject must be at least 3 characters';
+
+  if (!formData.message.trim()) errors.message = 'Message is required';
+  else if (formData.message.trim().length < 10) errors.message = `Message too short — ${10 - formData.message.trim().length} more characters needed`;
+
+  return errors;
+};
+
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [status, setStatus] = useState({ type: '', message: '' });
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const formRef = useRef(null);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (touched[name]) {
+      const newErrors = validate({ ...formData, [name]: value });
+      setErrors(prev => ({ ...prev, [name]: newErrors[name] }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const newErrors = validate(formData);
+    setErrors(prev => ({ ...prev, [name]: newErrors[name] }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const allTouched = { name: true, email: true, subject: true, message: true };
+    setTouched(allTouched);
+    const validationErrors = validate(formData);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
     setLoading(true);
     setStatus({ type: '', message: '' });
 
     try {
-      const response = await axios.post(`${API_URL}/api/contact`, formData, {
-        timeout: 15000 // 15 second timeout
-      });
-
+      const response = await axios.post(`${API_URL}/api/contact`, formData, { timeout: 30000 });
       if (response.data && response.data.success) {
-        setStatus({ type: 'success', message: 'Message sent successfully! I will get back to you soon.' });
+        setSubmitted(true);
         setFormData({ name: '', email: '', subject: '', message: '' });
-        setTimeout(() => setStatus({ type: '', message: '' }), 3000);
+        setTouched({});
+        setErrors({});
+        setTimeout(() => setSubmitted(false), 5000);
       } else {
         setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
       }
     } catch (error) {
-      console.error('Contact form error:', error);
-      if (error.code === 'ECONNABORTED') {
-        setStatus({ type: 'error', message: 'Request timed out. Please try again.' });
-      } else {
-        setStatus({
-          type: 'error',
-          message: error.response?.data?.message || 'Failed to send message. Please try again.'
-        });
-      }
+      setStatus({
+        type: 'error',
+        message: error.code === 'ECONNABORTED'
+          ? 'Request timed out. Please try again.'
+          : error.response?.data?.message || 'Failed to send message. Please try again.'
+      });
     } finally {
       setLoading(false);
     }
+  };
+
+  const getFieldState = (name) => {
+    if (!touched[name]) return 'idle';
+    if (errors[name]) return 'error';
+    if (formData[name]) return 'success';
+    return 'idle';
   };
 
   const contactInfo = [
@@ -58,11 +100,22 @@ const Contact = () => {
     { icon: FaGithub, url: 'https://github.com/fahadali0077', label: 'GitHub' }
   ];
 
+  const inputVariants = {
+    idle: { borderColor: 'var(--color-border)' },
+    error: { borderColor: '#ff4466', boxShadow: '0 0 0 3px rgba(255,68,102,0.15)' },
+    success: { borderColor: '#00ff88', boxShadow: '0 0 0 3px rgba(0,255,136,0.1)' }
+  };
+
   return (
     <div className="contact-page">
       <section className="contact-header section">
         <div className="container">
-          <motion.div className="header-content" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <motion.div
+            className="header-content"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <h1 className="page-title">Get In Touch<span className="title-dot">.</span></h1>
             <p className="page-description">
               Have a project in mind or want to collaborate? I'd love to hear from you.
@@ -75,14 +128,34 @@ const Contact = () => {
       <section className="contact-content section">
         <div className="container">
           <div className="contact-grid">
-            <motion.div className="contact-info" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
+
+            {/* Left: Contact Info */}
+            <motion.div
+              className="contact-info"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <h2>Contact Information</h2>
               <p className="info-description">Let's discuss your next project or opportunity.</p>
 
               <div className="info-cards">
                 {contactInfo.map((info, index) => (
-                  <motion.div key={info.label} className="info-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + index * 0.1 }}>
-                    <div className="info-icon"><info.icon /></div>
+                  <motion.div
+                    key={info.label}
+                    className="info-card"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    whileHover={{ x: 10, transition: { duration: 0.2 } }}
+                  >
+                    <motion.div
+                      className="info-icon"
+                      whileHover={{ rotate: 10, scale: 1.1 }}
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+                      <info.icon />
+                    </motion.div>
                     <div className="info-content">
                       <h4>{info.label}</h4>
                       {info.link ? <a href={info.link}>{info.value}</a> : <p>{info.value}</p>}
@@ -102,11 +175,11 @@ const Contact = () => {
                       rel="noopener noreferrer"
                       className="social-link"
                       aria-label={social.label}
-                      whileHover={{ scale: 1.05, y: -3 }}
-                      whileTap={{ scale: 0.95 }}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.5 + index * 0.1 }}
+                      whileHover={{ scale: 1.1, y: -5 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <social.icon size={22} style={{ color: 'inherit', display: 'block' }} />
                     </motion.a>
@@ -115,63 +188,291 @@ const Contact = () => {
               </div>
             </motion.div>
 
-            <motion.div className="contact-form-container" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
-              <form onSubmit={handleSubmit} className="contact-form card">
-                <h2>Send Me a Message</h2>
-                {/* Name field */}
-                <div className="form-group">
-                  <label htmlFor="name">Your Name *</label>
-                  <input type="text" id="name" name="name" value={formData.name}
-                    onChange={handleChange} required placeholder="John Doe" className="form-input"
-                    minLength={2} title="Please enter your full name" />
-                </div>
-                {/* Email field */}
-                <div className="form-group">
-                  <label htmlFor="email">Your Email *</label>
-                  <input type="email" id="email" name="email" value={formData.email}
-                    onChange={handleChange} required placeholder="john@example.com" className="form-input"
-                    title="Please enter a valid email address e.g. name@example.com" />
-                </div>
-
-                {/* Subject field */}
-                <div className="form-group">
-                  <label htmlFor="subject">Subject *</label>
-                  <input type="text" id="subject" name="subject" value={formData.subject}
-                    onChange={handleChange} required placeholder="Project Inquiry" className="form-input"
-                    minLength={3} title="Please enter a subject (at least 3 characters)" />
-                </div>
-
-                {/* Message field with character counter */}
-                <div className="form-group">
-                  <label htmlFor="message">Your Message *</label>
-                  <textarea id="message" name="message" value={formData.message}
-                    onChange={handleChange} required rows="6"
-                    placeholder="Tell me about your project..." className="form-input"
-                    minLength={10} maxLength={2000} />
-                  <div style={{
-                    textAlign: 'right',
-                    fontSize: '12px',
-                    marginTop: '4px',
-                    color: formData.message.length < 10 ? '#ff6b6b' : '#68c19f'
-                  }}>
-                    {formData.message.length}/2000
-                    {formData.message.length < 10 && formData.message.length > 0 &&
-                      <span style={{ marginLeft: '8px' }}>Min 10 characters</span>
-                    }
-                  </div>
-                </div>
-
-                {status.message && (
-                  <motion.div className={`status-message ${status.type}`} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-                    {status.message}
+            {/* Right: Form */}
+            <motion.div
+              className="contact-form-container"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <AnimatePresence mode="wait">
+                {submitted ? (
+                  <motion.div
+                    key="success"
+                    className="success-screen card"
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                  >
+                    <motion.div
+                      className="success-icon"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                    >
+                      <FaCheckCircle />
+                    </motion.div>
+                    <motion.h2
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      Message Sent!
+                    </motion.h2>
+                    <motion.p
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      Thanks for reaching out. I'll get back to you as soon as possible.
+                    </motion.p>
+                    <motion.div
+                      className="success-bar"
+                      initial={{ width: '100%' }}
+                      animate={{ width: '0%' }}
+                      transition={{ duration: 5, ease: 'linear' }}
+                    />
                   </motion.div>
-                )}
+                ) : (
+                  <motion.form
+                    key="form"
+                    ref={formRef}
+                    onSubmit={handleSubmit}
+                    className="contact-form card"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    noValidate
+                  >
+                    <h2>Send Me a Message</h2>
 
-                <button type="submit" className="btn btn-primary submit-btn" disabled={loading}>
-                  {loading ? 'Sending...' : 'Send Message'}
-                </button>
-              </form>
+                    {/* Name */}
+                    <div className="form-group">
+                      <label htmlFor="name">Your Name *</label>
+                      <div className="input-wrapper">
+                        <motion.input
+                          type="text"
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="John Doe"
+                          className={`form-input ${getFieldState('name')}`}
+                          animate={inputVariants[getFieldState('name')]}
+                          transition={{ duration: 0.2 }}
+                        />
+                        <AnimatePresence>
+                          {getFieldState('name') === 'success' && (
+                            <motion.span className="field-icon success-icon-sm" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }}>
+                              <FaCheckCircle />
+                            </motion.span>
+                          )}
+                          {getFieldState('name') === 'error' && (
+                            <motion.span className="field-icon error-icon-sm" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }}>
+                              <FaExclamationCircle />
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                      <AnimatePresence>
+                        {errors.name && touched.name && (
+                          <motion.span
+                            className="field-error"
+                            initial={{ opacity: 0, y: -6, height: 0 }}
+                            animate={{ opacity: 1, y: 0, height: 'auto' }}
+                            exit={{ opacity: 0, y: -6, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <FaExclamationCircle /> {errors.name}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Email */}
+                    <div className="form-group">
+                      <label htmlFor="email">Your Email *</label>
+                      <div className="input-wrapper">
+                        <motion.input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="john@example.com"
+                          className={`form-input ${getFieldState('email')}`}
+                          animate={inputVariants[getFieldState('email')]}
+                          transition={{ duration: 0.2 }}
+                        />
+                        <AnimatePresence>
+                          {getFieldState('email') === 'success' && (
+                            <motion.span className="field-icon success-icon-sm" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }}>
+                              <FaCheckCircle />
+                            </motion.span>
+                          )}
+                          {getFieldState('email') === 'error' && (
+                            <motion.span className="field-icon error-icon-sm" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }}>
+                              <FaExclamationCircle />
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                      <AnimatePresence>
+                        {errors.email && touched.email && (
+                          <motion.span
+                            className="field-error"
+                            initial={{ opacity: 0, y: -6, height: 0 }}
+                            animate={{ opacity: 1, y: 0, height: 'auto' }}
+                            exit={{ opacity: 0, y: -6, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <FaExclamationCircle /> {errors.email}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Subject */}
+                    <div className="form-group">
+                      <label htmlFor="subject">Subject *</label>
+                      <div className="input-wrapper">
+                        <motion.input
+                          type="text"
+                          id="subject"
+                          name="subject"
+                          value={formData.subject}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder="Project Inquiry"
+                          className={`form-input ${getFieldState('subject')}`}
+                          animate={inputVariants[getFieldState('subject')]}
+                          transition={{ duration: 0.2 }}
+                        />
+                        <AnimatePresence>
+                          {getFieldState('subject') === 'success' && (
+                            <motion.span className="field-icon success-icon-sm" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }}>
+                              <FaCheckCircle />
+                            </motion.span>
+                          )}
+                          {getFieldState('subject') === 'error' && (
+                            <motion.span className="field-icon error-icon-sm" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }}>
+                              <FaExclamationCircle />
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                      <AnimatePresence>
+                        {errors.subject && touched.subject && (
+                          <motion.span
+                            className="field-error"
+                            initial={{ opacity: 0, y: -6, height: 0 }}
+                            animate={{ opacity: 1, y: 0, height: 'auto' }}
+                            exit={{ opacity: 0, y: -6, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <FaExclamationCircle /> {errors.subject}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Message */}
+                    <div className="form-group">
+                      <label htmlFor="message">Your Message *</label>
+                      <div className="input-wrapper textarea-wrapper">
+                        <motion.textarea
+                          id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          rows="6"
+                          placeholder="Tell me about your project..."
+                          className={`form-input ${getFieldState('message')}`}
+                          animate={inputVariants[getFieldState('message')]}
+                          transition={{ duration: 0.2 }}
+                          maxLength={2000}
+                        />
+                      </div>
+                      <div className="message-footer">
+                        <AnimatePresence>
+                          {errors.message && touched.message && (
+                            <motion.span
+                              className="field-error inline"
+                              initial={{ opacity: 0, x: -6 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -6 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <FaExclamationCircle /> {errors.message}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                        <motion.span
+                          className="char-counter"
+                          animate={{ color: formData.message.length < 10 && formData.message.length > 0 ? '#ff4466' : formData.message.length >= 10 ? '#00ff88' : 'var(--color-text-secondary)' }}
+                        >
+                          {formData.message.length} / 2000
+                        </motion.span>
+                      </div>
+                    </div>
+
+                    {/* Server error */}
+                    <AnimatePresence>
+                      {status.message && (
+                        <motion.div
+                          className={`status-message ${status.type}`}
+                          initial={{ opacity: 0, y: -10, height: 0 }}
+                          animate={{ opacity: 1, y: 0, height: 'auto' }}
+                          exit={{ opacity: 0, y: -10, height: 0 }}
+                        >
+                          {status.message}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Submit Button */}
+                    <motion.button
+                      type="submit"
+                      className="btn btn-primary submit-btn"
+                      disabled={loading}
+                      whileHover={!loading ? { scale: 1.02, y: -2 } : {}}
+                      whileTap={!loading ? { scale: 0.98 } : {}}
+                    >
+                      <AnimatePresence mode="wait">
+                        {loading ? (
+                          <motion.span
+                            key="loading"
+                            className="btn-content"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            <span className="spinner-dot" />
+                            <span className="spinner-dot" />
+                            <span className="spinner-dot" />
+                          </motion.span>
+                        ) : (
+                          <motion.span
+                            key="send"
+                            className="btn-content"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                          >
+                            Send Message <FaPaperPlane style={{ marginLeft: '8px' }} />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </motion.div>
+
           </div>
         </div>
       </section>
