@@ -21,26 +21,16 @@ const Contact = () => {
     setStatus({ type: '', message: '' });
 
     try {
-      const response = await axios.post(`${API_URL}/api/contact`, formData, {
-        timeout: 15000 // 15 second timeout
-      });
-
-      if (response.data && response.data.success) {
-        setStatus({ type: 'success', message: 'Message sent successfully! I will get back to you soon.' });
+      const response = await axios.post(`${API_URL}/api/contact`, formData);
+      if (response.data.success) {
+        setStatus({ type: 'success', message: response.data.message });
         setFormData({ name: '', email: '', subject: '', message: '' });
-      } else {
-        setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
       }
     } catch (error) {
-      console.error('Contact form error:', error);
-      if (error.code === 'ECONNABORTED') {
-        setStatus({ type: 'error', message: 'Request timed out. Please try again.' });
-      } else {
-        setStatus({
-          type: 'error',
-          message: error.response?.data?.message || 'Failed to send message. Please try again.'
-        });
-      }
+      setStatus({
+        type: 'error',
+        message: error.response?.data?.message || 'Failed to send message. Please try again.'
+      });
     } finally {
       setLoading(false);
     }
