@@ -28,6 +28,7 @@ const Contact = () => {
       if (response.data && response.data.success) {
         setStatus({ type: 'success', message: 'Message sent successfully! I will get back to you soon.' });
         setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setStatus({ type: '', message: '' }), 3000);
       } else {
         setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
       }
@@ -117,25 +118,47 @@ const Contact = () => {
             <motion.div className="contact-form-container" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
               <form onSubmit={handleSubmit} className="contact-form card">
                 <h2>Send Me a Message</h2>
-
+                {/* Name field */}
                 <div className="form-group">
                   <label htmlFor="name">Your Name *</label>
-                  <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required placeholder="John Doe" className="form-input" />
+                  <input type="text" id="name" name="name" value={formData.name}
+                    onChange={handleChange} required placeholder="John Doe" className="form-input"
+                    minLength={2} title="Please enter your full name" />
                 </div>
-
+                {/* Email field */}
                 <div className="form-group">
                   <label htmlFor="email">Your Email *</label>
-                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required placeholder="john@example.com" className="form-input" />
+                  <input type="email" id="email" name="email" value={formData.email}
+                    onChange={handleChange} required placeholder="john@example.com" className="form-input"
+                    title="Please enter a valid email address e.g. name@example.com" />
                 </div>
 
+                {/* Subject field */}
                 <div className="form-group">
                   <label htmlFor="subject">Subject *</label>
-                  <input type="text" id="subject" name="subject" value={formData.subject} onChange={handleChange} required placeholder="Project Inquiry" className="form-input" />
+                  <input type="text" id="subject" name="subject" value={formData.subject}
+                    onChange={handleChange} required placeholder="Project Inquiry" className="form-input"
+                    minLength={3} title="Please enter a subject (at least 3 characters)" />
                 </div>
 
+                {/* Message field with character counter */}
                 <div className="form-group">
                   <label htmlFor="message">Your Message *</label>
-                  <textarea id="message" name="message" value={formData.message} onChange={handleChange} required rows="6" placeholder="Tell me about your project..." className="form-input" />
+                  <textarea id="message" name="message" value={formData.message}
+                    onChange={handleChange} required rows="6"
+                    placeholder="Tell me about your project..." className="form-input"
+                    minLength={10} maxLength={2000} />
+                  <div style={{
+                    textAlign: 'right',
+                    fontSize: '12px',
+                    marginTop: '4px',
+                    color: formData.message.length < 10 ? '#ff6b6b' : '#68c19f'
+                  }}>
+                    {formData.message.length}/2000
+                    {formData.message.length < 10 && formData.message.length > 0 &&
+                      <span style={{ marginLeft: '8px' }}>Min 10 characters</span>
+                    }
+                  </div>
                 </div>
 
                 {status.message && (
