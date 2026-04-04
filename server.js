@@ -8,6 +8,8 @@ require('dotenv').config();
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
@@ -31,8 +33,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✓ MongoDB connected successfully'))
-.catch(err => console.error('✗ MongoDB connection error:', err));
+  .then(() => console.log('✓ MongoDB connected successfully'))
+  .catch(err => console.error('✗ MongoDB connection error:', err));
 
 // API Routes
 app.use('/api/contact', require('./routes/contact'));
@@ -42,7 +44,7 @@ app.use('/api/skills', require('./routes/skills'));
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
-  
+
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
@@ -56,8 +58,8 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!', 
+  res.status(500).json({
+    message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : {}
   });
 });
