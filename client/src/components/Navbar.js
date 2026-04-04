@@ -13,7 +13,6 @@ const Navbar = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -60,16 +59,17 @@ const Navbar = () => {
                 )}
               </Link>
             ))}
-          </div>
 
-          <a
-            href="/Fahad_Ali_Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary navbar-cta"
-          >
-            Resume
-          </a>
+            {/* Resume only visible on desktop */}
+            <a
+              href="/Fahad_Ali_Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary navbar-cta"
+            >
+              Resume
+            </a>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -97,15 +97,13 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`mobile-nav-link ${
-                    location.pathname === link.path ? 'active' : ''
-                  }`}
+                  className={`mobile-nav-link ${location.pathname === link.path ? 'active' : ''}`}
                 >
                   {link.label}
                 </Link>
               ))}
               <a
-                href="/resume.pdf"
+                href="/Fahad_Ali_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary mobile-cta"
