@@ -2,12 +2,9 @@ const Contact = require('../models/Contact');
 const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 
-// Email transporter configuration
 const createTransporter = () => {
   return nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secure: false,
+    service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD
@@ -15,10 +12,8 @@ const createTransporter = () => {
   });
 };
 
-// Submit contact form
 exports.submitContact = async (req, res) => {
   try {
-    // Validate input
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -27,16 +22,17 @@ exports.submitContact = async (req, res) => {
     const { name, email, subject, message } = req.body;
 
     // Save to database
-    const contact = new Contact({
-      name,
-      email,
-      subject,
-      message
-    });
-
+    const contact = new Contact({ name, email, subject, message });
     await contact.save();
 
-    // Send email notification
+    // Respond immediately — don't wait for email
+    res.status(201).json({
+      success: true,
+      message: 'Message sent successfully! I will get back to you soon.',
+      data: contact
+    });
+
+    // Send emails in background after response
     try {
       const transporter = createTransporter();
 
@@ -56,7 +52,6 @@ exports.submitContact = async (req, res) => {
         `
       });
 
-      // Send confirmation to user
       await transporter.sendMail({
         from: process.env.EMAIL_FROM,
         to: email,
@@ -67,16 +62,11 @@ exports.submitContact = async (req, res) => {
           <p>Best regards,<br>Fahad Ali</p>
         `
       });
+
+      console.log('Emails sent successfully');
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
-      // Continue even if email fails - contact is saved in DB
     }
-
-    res.status(201).json({
-      success: true,
-      message: 'Message sent successfully! I will get back to you soon.',
-      data: contact
-    });
 
   } catch (error) {
     console.error('Contact submission error:', error);
@@ -87,7 +77,6 @@ exports.submitContact = async (req, res) => {
   }
 };
 
-// Get all contacts (for admin dashboard)
 exports.getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
