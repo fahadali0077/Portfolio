@@ -9,7 +9,7 @@ const createTransporter = () => {
     port: process.env.EMAIL_PORT,
     secure: false,
     auth: {
-      user: process.env.E MAIL_USER,
+      user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD
     }
   });
@@ -39,7 +39,7 @@ exports.submitContact = async (req, res) => {
     // Send email notification
     try {
       const transporter = createTransporter();
-      
+
       await transporter.sendMail({
         from: process.env.EMAIL_FROM,
         to: process.env.EMAIL_TO,
