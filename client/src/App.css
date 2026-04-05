@@ -61,6 +61,12 @@ body {
 @media (pointer: coarse) {
   /* restore cursor on touch devices that have no custom cursor */
   body { cursor: auto; }
+  /* hide the JS cursor element in case isMobile detection fires late */
+  .back-to-top { cursor: pointer; }
+  /* hide custom cursor div on touch devices */
+  [aria-hidden="true"][style*="position: fixed"][style*="z-index: 99999"] {
+    display: none !important;
+  }
 }
 
 /* Scrollbar */

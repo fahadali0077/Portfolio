@@ -795,7 +795,8 @@
   }
 
   .hero-visual {
-    order: -1;
+    /* order: -1 removed — text stays on top, code window below on mobile */
+    order: 1;
   }
 
   .hero-stats {
@@ -843,6 +844,25 @@
 
   .hero-content {
     gap: 1.5rem;
+    text-align: center;
+  }
+
+  .hero-badge {
+    margin: 0 auto;
+  }
+
+  .hero-description {
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-subtitle h2 {
+    text-align: center;
+    width: 100%;
+  }
+
+  .hero-subtitle {
+    justify-content: center;
   }
 
   /* Code window: constrain width and prevent overflow */
