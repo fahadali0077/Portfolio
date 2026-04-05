@@ -377,3 +377,75 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* ─── Back to Top Button ─── */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9000;
+  width: 52px;
+  height: 52px;
+  border: none;
+  background: var(--color-surface);
+  border-radius: 50%;
+  cursor: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-border);
+  padding: 0;
+  outline: none;
+}
+
+.back-to-top:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 255, 170, 0.5);
+}
+
+/* SVG progress ring sits at full button size */
+.btt-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* start from top */
+}
+
+.btt-ring-track {
+  fill: none;
+  stroke: var(--color-border-light);
+  stroke-width: 2.5;
+}
+
+.btt-ring-progress {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 170, 0.7));
+  transition: stroke-dashoffset 0.15s linear;
+}
+
+/* Arrow icon centred inside */
+.btt-arrow {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  stroke: var(--color-accent);
+  fill: none;
+  stroke-width: 2.2;
+}
+
+/* Glow pulse on hover — handled by Framer Motion scale + CSS filter */
+.back-to-top:hover .btt-ring-progress {
+  filter: drop-shadow(0 0 8px rgba(0, 255, 170, 0.9));
+}
+
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    width: 46px;
+    height: 46px;
+  }
+}

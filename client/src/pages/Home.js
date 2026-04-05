@@ -26,6 +26,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [aboutRef, aboutInView] = useInView({ threshold: 0.1, triggerOnce: true });
   const [skillsRef, skillsInView] = useInView({ threshold: 0.05, triggerOnce: true });
+  const [featuredRef, featuredInView] = useInView({ threshold: 0.1, triggerOnce: true });
 
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 600], [0, -80]);
@@ -202,10 +203,14 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             style={{ display: 'flex', flexDirection: 'column' }}
           >
-
-            <h2 className="section-title">
+            <motion.h2
+              className="section-title"
+              initial={{ opacity: 0, y: 40, skewY: 2 }}
+              animate={aboutInView ? { opacity: 1, y: 0, skewY: 0 } : {}}
+              transition={{ duration: 0.75, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+            >
               The Mind<br />Behind The Code
-            </h2>
+            </motion.h2>
           </motion.div>
 
           <div className="about-content">
@@ -262,8 +267,14 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             style={{ display: 'flex', flexDirection: 'column' }}
           >
-
-            <h2 className="section-title">Technical Skills</h2>
+            <motion.h2
+              className="section-title"
+              initial={{ opacity: 0, y: 40, skewY: 2 }}
+              animate={skillsInView ? { opacity: 1, y: 0, skewY: 0 } : {}}
+              transition={{ duration: 0.75, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+            >
+              Technical Skills
+            </motion.h2>
           </motion.div>
 
           <div className="skills-grid">
@@ -280,12 +291,18 @@ const Home = () => {
 
       {/* ===== FEATURED PROJECTS ===== */}
       {!loading && projects.length > 0 && (
-        <section className="featured-projects section">
+        <section className="featured-projects section" ref={featuredRef}>
           <div className="container">
             <div className="section-header">
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-
-                <h2 className="section-title">Featured Projects</h2>
+                <motion.h2
+                  className="section-title"
+                  initial={{ opacity: 0, y: 40, skewY: 2 }}
+                  animate={featuredInView ? { opacity: 1, y: 0, skewY: 0 } : {}}
+                  transition={{ duration: 0.75, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+                >
+                  Featured Projects
+                </motion.h2>
               </div>
               <Link to="/projects" className="view-all-link">
                 View All <FaArrowRight />

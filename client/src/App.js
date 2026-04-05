@@ -37,6 +37,68 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+/* ─── Back to Top Button ─── */
+const BackToTop = () => {
+  const [visible, setVisible] = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? Math.min(scrolled / total, 1) : 0;
+      setScrollPct(pct);
+      setVisible(scrolled > 400);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const handleClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // SVG ring progress
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - scrollPct);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          className="back-to-top"
+          onClick={handleClick}
+          aria-label="Back to top"
+          initial={{ opacity: 0, scale: 0.5, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.5, y: 20 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+          whileHover={{ scale: 1.12 }}
+          whileTap={{ scale: 0.92 }}
+        >
+          {/* Circular progress ring */}
+          <svg className="btt-ring" viewBox="0 0 50 50" aria-hidden="true">
+            {/* Track */}
+            <circle cx="25" cy="25" r={radius} className="btt-ring-track" />
+            {/* Progress */}
+            <circle
+              cx="25" cy="25" r={radius}
+              className="btt-ring-progress"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+            />
+          </svg>
+          {/* Arrow icon */}
+          <svg className="btt-arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 19V5M5 12l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
+};
+
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } },
@@ -201,6 +263,7 @@ function App() {
         <ScrollToTop />
         <AnimatedRoutes />
         <Footer />
+        <BackToTop />
       </div>
     </Router>
   );
