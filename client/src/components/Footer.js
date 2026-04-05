@@ -21,7 +21,13 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="footer">
+    <motion.footer
+      className="footer"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+    >
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
@@ -29,12 +35,13 @@ const Footer = () => {
               Fahad<span className="accent-dot">.</span>
             </h3>
             <p className="footer-tagline">
-              Building digital experiences with the MERN stack
+              Building digital experiences with the MERN stack.
+              Open to new opportunities and collaborations.
             </p>
           </div>
 
           <div className="footer-section">
-            <h4 className="footer-heading">Quick Links</h4>
+            <h4 className="footer-heading">Navigation</h4>
             <div className="footer-links">
               {footerLinks.map((link) => (
                 <Link key={link.path} to={link.path} className="footer-link">
@@ -55,13 +62,14 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="social-link"
                   aria-label={social.label}
-                  whileHover={{ scale: 1.1, y: -3 }}
+                  whileHover={{ scale: 1.12, y: -3 }}
                   whileTap={{ scale: 0.95 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08 }}
                 >
-                  <social.icon size={22} />
+                  <social.icon size={18} />
                 </motion.a>
               ))}
             </div>
@@ -73,11 +81,11 @@ const Footer = () => {
             © {currentYear} Fahad Ali. All rights reserved.
           </p>
           <p className="footer-built">
-            Built with <span className="heart">❤</span> using MERN Stack
+            Built with <span className="heart">♥</span> using MERN Stack
           </p>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 

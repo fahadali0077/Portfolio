@@ -10,9 +10,7 @@ const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -20,6 +18,12 @@ const Navbar = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
 
   const navLinks = [
     { path: '/', label: 'Home' },
@@ -30,45 +34,53 @@ const Navbar = () => {
   return (
     <motion.nav
       className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
     >
       <div className="container">
         <div className="navbar-content">
           <Link to="/" className="navbar-logo">
-            <span className="logo-text">Fahad</span>
+            <motion.span
+              className="logo-text"
+              whileHover={{ letterSpacing: '-0.01em' }}
+            >
+              Fahad
+            </motion.span>
             <span className="logo-dot">.</span>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Nav */}
           <div className="navbar-links">
-            {navLinks.map((link) => (
-              <Link
+            {navLinks.map((link, i) => (
+              <motion.div
                 key={link.path}
-                to={link.path}
-                className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * i + 0.3 }}
               >
-                {link.label}
-                {location.pathname === link.path && (
-                  <motion.div
-                    className="nav-link-underline"
-                    layoutId="underline"
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
-              </Link>
+                <Link
+                  to={link.path}
+                  className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
             ))}
 
-            {/* Resume only visible on desktop */}
-            <a
+            <motion.a
               href="/Fahad_Ali_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary navbar-cta"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
             >
               Resume
-            </a>
+            </motion.a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -77,7 +89,17 @@ const Navbar = () => {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <HiX size={28} /> : <HiMenu size={28} />}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mobileMenuOpen ? 'close' : 'open'}
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {mobileMenuOpen ? <HiX size={22} /> : <HiMenu size={22} />}
+              </motion.div>
+            </AnimatePresence>
           </button>
         </div>
       </div>
@@ -90,26 +112,35 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
             <div className="mobile-menu-links">
-              {navLinks.map((link) => (
-                <Link
+              {navLinks.map((link, i) => (
+                <motion.div
                   key={link.path}
-                  to={link.path}
-                  className={`mobile-nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.07 }}
                 >
-                  {link.label}
-                </Link>
+                  <Link
+                    to={link.path}
+                    className={`mobile-nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
-              <a
+              <motion.a
                 href="/Fahad_Ali_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary mobile-cta"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
               >
-                Resume
-              </a>
+                Download Resume
+              </motion.a>
             </div>
           </motion.div>
         )}
