@@ -790,7 +790,7 @@
 @media (max-width: 1024px) {
   .hero-content {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2.5rem;
     text-align: center;
   }
 
@@ -821,11 +821,56 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
   }
+
+  /* Keep floating badges from bleeding off screen on tablets */
+  .fb-top {
+    top: -12px;
+    right: 0;
+  }
+
+  .fb-bottom {
+    bottom: 12px;
+    left: 0;
+  }
 }
 
 @media (max-width: 768px) {
   .hero {
-    padding-top: 6rem;
+    padding-top: 5rem;
+    min-height: auto;
+    padding-bottom: 3rem;
+  }
+
+  .hero-content {
+    gap: 1.5rem;
+  }
+
+  /* Code window: constrain width and prevent overflow */
+  .hero-visual-wrapper {
+    max-width: 100%;
+    padding: 1.5rem 0 0.5rem; /* room for the top badge */
+  }
+
+  /* Hide floating badges on small phones — they overlap too much */
+  .floating-badge {
+    display: none;
+  }
+
+  /* Decorative rings are too large and clip — hide on mobile */
+  .deco-ring {
+    display: none;
+  }
+
+  .code-window {
+    border-radius: var(--radius-md);
+  }
+
+  .window-content {
+    padding: 0.75rem 1rem;
+  }
+
+  .line-code {
+    font-size: 0.72rem;
   }
 
   .hero-cta {
@@ -841,10 +886,6 @@
     gap: 1.5rem;
   }
 
-  .fb-bottom {
-    display: none;
-  }
-
   .about-sidebar {
     grid-template-columns: 1fr;
   }
@@ -856,5 +897,24 @@
   .section-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 400px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+
+  .window-content {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .line-code {
+    font-size: 0.66rem;
+  }
+
+  .line-num {
+    font-size: 0.66rem;
   }
 }
