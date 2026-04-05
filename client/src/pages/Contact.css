@@ -154,6 +154,9 @@
 
 .contact-form {
   padding: 2.5rem;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
 }
 
 .contact-form h2 {
@@ -337,36 +340,94 @@ textarea.form-input {
 
 /* Success Screen */
 .success-screen {
-  padding: 4rem 2.5rem;
+  /* Fill the full form container height so it is always visible */
+  min-height: 520px;
+  padding: 4rem 3rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: center;
+  gap: 1.75rem;
   position: relative;
   overflow: hidden;
+  /* Glowing border to draw attention */
+  border-color: rgba(0,255,170,0.35) !important;
+  box-shadow: 0 0 60px rgba(0,255,170,0.08), inset 0 0 60px rgba(0,255,170,0.03) !important;
+}
+
+/* Large animated checkmark ring */
+.success-icon-wrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(0,255,170,0.3);
+  animation: successPing 1.8s ease-out infinite;
+}
+
+.success-icon-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,170,0.12);
+  animation: successPing 1.8s ease-out 0.4s infinite;
+}
+
+@keyframes successPing {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
 .success-screen .success-icon {
-  font-size: 3.5rem;
+  font-size: 3.8rem;
   color: var(--color-accent);
-  filter: drop-shadow(0 0 20px rgba(0,255,170,0.5));
+  filter: drop-shadow(0 0 24px rgba(0,255,170,0.6));
+  position: relative;
+  z-index: 1;
 }
 
-.success-screen h2 { font-size: 1.8rem; margin: 0; }
+.success-screen h2 {
+  font-size: 2.2rem;
+  margin: 0;
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 .success-screen p {
-  font-size: 1rem;
+  font-size: 1.05rem;
   margin: 0;
-  max-width: 300px;
+  max-width: 340px;
+  line-height: 1.7;
+}
+
+.success-timer-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .success-bar {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 2px;
+  height: 3px;
   background: linear-gradient(90deg, var(--color-accent), var(--color-accent-dark));
+  box-shadow: 0 0 10px rgba(0,255,170,0.5);
 }
 
 /* Responsive */

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
@@ -30,88 +30,109 @@ const AnimatedRoutes = () => {
   );
 };
 
-function App() {
-  const cursorDotRef = useRef(null);
-  const cursorOutlineRef = useRef(null);
+/* ─── Beautiful cursor: one soft glowing orb that follows smoothly ─── */
+const CustomCursor = () => {
+  const cursorRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const pos = useRef({ x: -200, y: -200 });
+  const current = useRef({ x: -200, y: -200 });
+  const raf = useRef(null);
+  const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
 
   useEffect(() => {
-    const dot = cursorDotRef.current;
-    const outline = cursorOutlineRef.current;
-    if (!dot || !outline) return;
+    if (isMobile) return;
 
-    let mouseX = 0, mouseY = 0;
-    let outlineX = 0, outlineY = 0;
-
-    const moveCursor = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      dot.style.left = `${mouseX}px`;
-      dot.style.top = `${mouseY}px`;
+    const onMove = (e) => {
+      pos.current = { x: e.clientX, y: e.clientY };
+      if (!isVisible) setIsVisible(true);
     };
 
-    const animateOutline = () => {
-      outlineX += (mouseX - outlineX) * 0.15;
-      outlineY += (mouseY - outlineY) * 0.15;
-      outline.style.left = `${outlineX}px`;
-      outline.style.top = `${outlineY}px`;
-      requestAnimationFrame(animateOutline);
+    const onEnter = () => setIsHovering(true);
+    const onLeave = () => setIsHovering(false);
+
+    const animate = () => {
+      // Very gentle lerp — feels effortless, not jittery
+      const ease = 0.08;
+      current.current.x += (pos.current.x - current.current.x) * ease;
+      current.current.y += (pos.current.y - current.current.y) * ease;
+
+      if (cursorRef.current) {
+        cursorRef.current.style.transform =
+          `translate(${current.current.x}px, ${current.current.y}px)`;
+      }
+      raf.current = requestAnimationFrame(animate);
     };
 
-    window.addEventListener('mousemove', moveCursor);
-    animateOutline();
+    raf.current = requestAnimationFrame(animate);
+    window.addEventListener('mousemove', onMove);
 
-    // Hover effect on interactive elements
-    const handleHoverIn = () => {
-      dot.style.width = '16px';
-      dot.style.height = '16px';
-      outline.style.width = '56px';
-      outline.style.height = '56px';
-      outline.style.opacity = '0.3';
-    };
-    const handleHoverOut = () => {
-      dot.style.width = '8px';
-      dot.style.height = '8px';
-      outline.style.width = '36px';
-      outline.style.height = '36px';
-      outline.style.opacity = '0.6';
-    };
-
-    const interactables = document.querySelectorAll('a, button, .card, .filter-btn');
-    interactables.forEach(el => {
-      el.addEventListener('mouseenter', handleHoverIn);
-      el.addEventListener('mouseleave', handleHoverOut);
+    const tags = document.querySelectorAll('a, button, [role="button"], .filter-btn, .card, input, textarea');
+    tags.forEach(el => {
+      el.addEventListener('mouseenter', onEnter);
+      el.addEventListener('mouseleave', onLeave);
     });
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
+      cancelAnimationFrame(raf.current);
+      window.removeEventListener('mousemove', onMove);
     };
   }, []);
 
+  if (isMobile) return null;
+
+  return (
+    <div
+      ref={cursorRef}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        pointerEvents: 'none',
+        zIndex: 99999,
+        willChange: 'transform',
+        /* offset so the glow is centred on the cursor hotspot */
+        marginLeft: '-24px',
+        marginTop: '-24px',
+      }}
+    >
+      {/* Outer soft glow — scales up on hover */}
+      <div style={{
+        width: '48px',
+        height: '48px',
+        borderRadius: '50%',
+        background: isHovering
+          ? 'radial-gradient(circle, rgba(0,255,170,0.18) 0%, rgba(0,255,170,0.04) 60%, transparent 100%)'
+          : 'radial-gradient(circle, rgba(0,255,170,0.10) 0%, rgba(0,255,170,0.02) 60%, transparent 100%)',
+        transform: isHovering ? 'scale(2.2)' : 'scale(1)',
+        transition: 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1), background 0.3s ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: isVisible ? 1 : 0,
+        transitionProperty: 'transform, background, opacity',
+      }}>
+        {/* Inner crisp dot */}
+        <div style={{
+          width: isHovering ? '5px' : '5px',
+          height: isHovering ? '5px' : '5px',
+          borderRadius: '50%',
+          background: 'var(--color-accent)',
+          boxShadow: isHovering
+            ? '0 0 0 1.5px rgba(0,255,170,0.4), 0 0 12px rgba(0,255,170,0.6)'
+            : '0 0 0 1px rgba(0,255,170,0.3), 0 0 6px rgba(0,255,170,0.4)',
+          transition: 'box-shadow 0.3s ease',
+          flexShrink: 0,
+        }} />
+      </div>
+    </div>
+  );
+};
+
+function App() {
   return (
     <Router>
-      {/* Custom Cursor (desktop only) */}
-      <div
-        ref={cursorDotRef}
-        style={{
-          position: 'fixed', width: '8px', height: '8px',
-          background: 'var(--color-accent)', borderRadius: '50%',
-          pointerEvents: 'none', zIndex: 99999,
-          transform: 'translate(-50%,-50%)', transition: 'width 0.2s, height 0.2s',
-          mixBlendMode: 'difference',
-          display: window.innerWidth < 768 ? 'none' : 'block'
-        }}
-      />
-      <div
-        ref={cursorOutlineRef}
-        style={{
-          position: 'fixed', width: '36px', height: '36px',
-          border: '1.5px solid var(--color-accent)', borderRadius: '50%',
-          pointerEvents: 'none', zIndex: 99998,
-          transform: 'translate(-50%,-50%)', opacity: 0.6,
-          transition: 'width 0.2s, height 0.2s, opacity 0.2s',
-          display: window.innerWidth < 768 ? 'none' : 'block'
-        }}
-      />
+      <CustomCursor />
 
       {/* Background */}
       <div className="bg-pattern" aria-hidden="true">

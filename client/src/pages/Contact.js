@@ -60,6 +60,8 @@ const Contact = () => {
         setFormData({ name: '', email: '', subject: '', message: '' });
         setTouched({});
         setErrors({});
+        // Scroll the form into view so user sees success message immediately
+        setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         setTimeout(() => setSubmitted(false), 5000);
       } else {
         setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
@@ -222,18 +224,33 @@ const Contact = () => {
                   transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                 >
                   <motion.div
-                    className="success-icon"
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ delay: 0.15, type: 'spring', stiffness: 200 }}
+                    className="success-icon-wrap"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 18 }}
                   >
-                    <FaCheckCircle />
+                    <motion.div
+                      className="success-icon"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                    >
+                      <FaCheckCircle />
+                    </motion.div>
                   </motion.div>
-                  <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+                  <motion.h2 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
                     Message Sent!
                   </motion.h2>
-                  <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+                  <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}>
                     Thanks for reaching out. I'll get back to you as soon as possible.
+                  </motion.p>
+                  <motion.p
+                    className="success-timer-label"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    This message will close in 5s
                   </motion.p>
                   <motion.div
                     className="success-bar"
