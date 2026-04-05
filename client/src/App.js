@@ -85,7 +85,7 @@ const CustomCursor = () => {
       cancelAnimationFrame(raf.current);
       window.removeEventListener('mousemove', onMove);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isMobile) return null;

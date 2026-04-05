@@ -86,7 +86,7 @@ const Home = () => {
               </motion.div>
 
               <motion.p className="hero-greeting" variants={itemVariants}>
-                Hello, world 👋
+                // hello, world 👋
               </motion.p>
 
               <motion.h1 className="hero-title" variants={itemVariants}>
@@ -221,6 +221,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={aboutInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
+            style={{ display: 'flex', flexDirection: 'column' }}
           >
             <p className="section-label">About Me</p>
             <h2 className="section-title">
@@ -292,6 +293,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={skillsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
+            style={{ display: 'flex', flexDirection: 'column' }}
           >
             <p className="section-label">What I Know</p>
             <h2 className="section-title">Technical Skills</h2>
@@ -314,7 +316,7 @@ const Home = () => {
         <section className="featured-projects section">
           <div className="container">
             <div className="section-header">
-              <div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <p className="section-label">Portfolio</p>
                 <h2 className="section-title">Featured Projects</h2>
               </div>

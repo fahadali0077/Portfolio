@@ -117,10 +117,11 @@ const Contact = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
           >
             <motion.p
               className="section-label"
-              style={{ justifyContent: 'center' }}
+              style={{ justifyContent: 'center', width: 'auto' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
