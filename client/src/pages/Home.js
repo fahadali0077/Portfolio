@@ -223,7 +223,7 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             style={{ display: 'flex', flexDirection: 'column' }}
           >
-            <p className="section-label">About Me</p>
+
             <h2 className="section-title">
               The Mind<br />Behind The Code
             </h2>
@@ -295,7 +295,7 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             style={{ display: 'flex', flexDirection: 'column' }}
           >
-            <p className="section-label">What I Know</p>
+
             <h2 className="section-title">Technical Skills</h2>
           </motion.div>
 
@@ -317,7 +317,7 @@ const Home = () => {
           <div className="container">
             <div className="section-header">
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <p className="section-label">Portfolio</p>
+
                 <h2 className="section-title">Featured Projects</h2>
               </div>
               <Link to="/projects" className="view-all-link">
