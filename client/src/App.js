@@ -30,6 +30,9 @@ const AnimatedRoutes = () => {
   );
 };
 
+/* isMobile never changes after mount — compute once outside the component */
+const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+
 /* ─── Beautiful cursor: one soft glowing orb that follows smoothly ─── */
 const CustomCursor = () => {
   const cursorRef = useRef(null);
@@ -38,14 +41,19 @@ const CustomCursor = () => {
   const pos = useRef({ x: -200, y: -200 });
   const current = useRef({ x: -200, y: -200 });
   const raf = useRef(null);
-  const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+  // Keep a ref so the mousemove handler can read the latest value
+  // without being listed as a useEffect dependency.
+  const isVisibleRef = useRef(false);
 
   useEffect(() => {
     if (isMobile) return;
 
     const onMove = (e) => {
       pos.current = { x: e.clientX, y: e.clientY };
-      if (!isVisible) setIsVisible(true);
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
     };
 
     const onEnter = () => setIsHovering(true);
@@ -77,6 +85,7 @@ const CustomCursor = () => {
       cancelAnimationFrame(raf.current);
       window.removeEventListener('mousemove', onMove);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isMobile) return null;
