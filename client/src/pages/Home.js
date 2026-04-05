@@ -86,7 +86,7 @@ const Home = () => {
               </motion.div>
 
               <motion.p className="hero-greeting" variants={itemVariants}>
-                // hello, world 👋
+                Hello, world 👋
               </motion.p>
 
               <motion.h1 className="hero-title" variants={itemVariants}>
