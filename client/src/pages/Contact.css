@@ -64,7 +64,7 @@
 .info-card:hover {
   border-color: rgba(0,255,170,0.3);
   box-shadow: 0 8px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,255,170,0.08);
-  transform: translateX(6px);
+  /* transform removed — Framer Motion whileHover={{ x: 8 }} handles this exclusively */
 }
 
 .info-icon {
@@ -438,6 +438,14 @@ textarea.form-input {
     padding-bottom: 4rem;
   }
   .contact-info { position: static; }
+}
+
+/* Bug 16 — collapse to single column earlier to avoid cramped layout on tablets */
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
 }
 
 @media (max-width: 768px) {

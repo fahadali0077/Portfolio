@@ -1,9 +1,9 @@
-/* Minimal index.css — all main styles in App.css */
+/* Minimal index.css — typography and all main styles are defined in App.css */
 body {
   margin: 0;
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* font-family omitted here — App.css sets it via CSS variables, avoiding a FOUT */
 }
 
 code {

@@ -1,13 +1,41 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import Home from './pages/Home';
-import Projects from './pages/Projects';
-import Contact from './pages/Contact';
 import './App.css';
+
+// Bug 18 — Code splitting: each page loads only when navigated to
+const Home = lazy(() => import('./pages/Home'));
+const Projects = lazy(() => import('./pages/Projects'));
+const Contact = lazy(() => import('./pages/Contact'));
+
+// Bug 19 — Error Boundary prevents a page crash from blanking the whole app
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error, info) { console.error('ErrorBoundary caught:', error, info); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+          <h2>Something went wrong.</h2>
+          <button
+            onClick={() => this.setState({ hasError: false })}
+            style={{ marginTop: '1rem', padding: '0.6rem 1.5rem', cursor: 'pointer' }}
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -20,18 +48,22 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <motion.div key={location.pathname} variants={pageVariants} initial="initial" animate="animate" exit="exit">
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
+        <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+          <Routes location={location}>
+            <Route path="/" element={<ErrorBoundary><Home /></ErrorBoundary>} />
+            <Route path="/projects" element={<ErrorBoundary><Projects /></ErrorBoundary>} />
+            <Route path="/contact" element={<ErrorBoundary><Contact /></ErrorBoundary>} />
+          </Routes>
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );
 };
 
 /* isMobile never changes after mount — compute once outside the component */
-const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+const isMobile = typeof window !== 'undefined'
+  ? window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
+  : false;
 
 /* ─── Beautiful cursor: one soft glowing orb that follows smoothly ─── */
 const CustomCursor = () => {
@@ -60,8 +92,8 @@ const CustomCursor = () => {
     const onLeave = () => setIsHovering(false);
 
     const animate = () => {
-      // Very gentle lerp — feels effortless, not jittery
-      const ease = 0.08;
+      // Bug 12 — Snappier lerp (was 0.08, felt laggy on fast moves)
+      const ease = 0.13;
       current.current.x += (pos.current.x - current.current.x) * ease;
       current.current.y += (pos.current.y - current.current.y) * ease;
 
@@ -75,15 +107,27 @@ const CustomCursor = () => {
     raf.current = requestAnimationFrame(animate);
     window.addEventListener('mousemove', onMove);
 
-    const tags = document.querySelectorAll('a, button, [role="button"], .filter-btn, .card, input, textarea');
-    tags.forEach(el => {
-      el.addEventListener('mouseenter', onEnter);
-      el.addEventListener('mouseleave', onLeave);
-    });
+    // Bug 2 — Re-attach hover listeners whenever new elements appear in the DOM
+    const attachHoverListeners = () => {
+      const tags = document.querySelectorAll('a, button, [role="button"], .filter-btn, .card, input, textarea');
+      tags.forEach(el => {
+        // Avoid attaching duplicates by removing first
+        el.removeEventListener('mouseenter', onEnter);
+        el.removeEventListener('mouseleave', onLeave);
+        el.addEventListener('mouseenter', onEnter);
+        el.addEventListener('mouseleave', onLeave);
+      });
+    };
+
+    attachHoverListeners();
+
+    const observer = new MutationObserver(attachHoverListeners);
+    observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       cancelAnimationFrame(raf.current);
       window.removeEventListener('mousemove', onMove);
+      observer.disconnect();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -93,6 +137,7 @@ const CustomCursor = () => {
   return (
     <div
       ref={cursorRef}
+      aria-hidden="true"
       style={{
         position: 'fixed',
         top: 0,
@@ -123,8 +168,8 @@ const CustomCursor = () => {
       }}>
         {/* Inner crisp dot */}
         <div style={{
-          width: isHovering ? '5px' : '5px',
-          height: isHovering ? '5px' : '5px',
+          width: isHovering ? '8px' : '5px',
+          height: isHovering ? '8px' : '5px',
           borderRadius: '50%',
           background: 'var(--color-accent)',
           boxShadow: isHovering

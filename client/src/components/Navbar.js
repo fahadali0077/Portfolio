@@ -88,6 +88,7 @@ const Navbar = () => {
             className="mobile-menu-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
           >
             <AnimatePresence mode="wait">
               <motion.div

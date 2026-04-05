@@ -27,6 +27,14 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef(null);
+  const resetTimerRef = useRef(null);
+
+  // Cleanup timer on unmount to prevent setState on an unmounted component
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,7 +70,7 @@ const Contact = () => {
         setErrors({});
         // Scroll the form into view so user sees success message immediately
         setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-        setTimeout(() => setSubmitted(false), 5000);
+        resetTimerRef.current = setTimeout(() => setSubmitted(false), 5000);
       } else {
         setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
       }

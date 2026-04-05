@@ -343,8 +343,8 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
-    position: relative;
-    top: 0;
+    position: sticky;
+    top: 4.5rem; /* navbar shrinks on mobile — adjusted from 5rem */
   }
 
   .filter-buttons {

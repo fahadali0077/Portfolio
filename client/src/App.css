@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts are loaded via <link> in index.html — no @import needed here */
 
 :root {
   --color-bg: #050507;
@@ -55,6 +55,12 @@ body {
   color: var(--color-text);
   overflow-x: hidden;
   line-height: 1.6;
+  cursor: none; /* hide native cursor — custom cursor is rendered in JS */
+}
+
+@media (pointer: coarse) {
+  /* restore cursor on touch devices that have no custom cursor */
+  body { cursor: auto; }
 }
 
 /* Scrollbar */
@@ -281,6 +287,7 @@ a {
   filter: blur(100px);
   pointer-events: none;
   opacity: 0.07;
+  will-change: transform;
 }
 
 .bg-orb-1 {
@@ -322,8 +329,8 @@ a {
   70% { transform: translate(-80px, 60px) scale(0.85); }
 }
 @keyframes orbFloat3 {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.04; }
-  50% { transform: translate(-60px, -80px) scale(1.3); opacity: 0.07; }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-60px, -80px) scale(1.3); }
 }
 
 /* Global Animations */
@@ -359,4 +366,14 @@ a {
 .App {
   position: relative;
   min-height: 100vh;
+}
+
+/* Bug 15 — Honour prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
