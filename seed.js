@@ -30,7 +30,7 @@ const projects = [
       'RESTful API with robust error handling',
     ],
     githubUrl: 'https://github.com/Fahad-Ali/MERN-School-Management-System',
-    liveUrl: 'https://mern-school-management-system-two.vercel.app/',
+    liveUrl: 'https://www.school-management-system.me/',
     imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800',
     category: 'Full-Stack',
     featured: true,
