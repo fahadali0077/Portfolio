@@ -31,7 +31,7 @@ const projectSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Full-Stack', 'Frontend', 'Backend', 'AI,ML', 'Other'],
+    enum: ['Full-Stack', 'Frontend', 'Backend', 'AI/ML', 'AI/Full-Stack', 'AI,ML', 'Other'],
     default: 'Full-Stack'
   },
   featured: {

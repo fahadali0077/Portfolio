@@ -70,7 +70,7 @@ const projects = [
     ],
     githubUrl: 'https://github.com/fahadali0077/MERNShop',
     liveUrl: 'https://mern-shop-swart.vercel.app/',
-    imageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800',
+    imageUrl: '/mernshop.png',
     category: 'Frontend',
     featured: true,
     order: 3,
@@ -78,7 +78,7 @@ const projects = [
   {
     title: 'EarlyWrite — Dysgraphia Detection',
     description:
-      'An AI-powered bilingual web platform that detects dysgraphia indicators in children\'s handwriting. Supports both English and Urdu, with word-level and sentence-level analysis modules delivering diagnostic feedback in real time. Final-year project supervised by Dr. Iqra Munir.',
+      "An AI-powered bilingual web platform that detects dysgraphia indicators in children's handwriting. Supports both English and Urdu, with word-level and sentence-level analysis modules delivering diagnostic feedback in real time. Final-year project supervised by Dr. Iqra Munir.",
     technologies: ['React', 'Node.js', 'Python', 'TensorFlow', 'MongoDB', 'AWS S3'],
     features: [
       'Bilingual support for English and Urdu handwriting analysis',
@@ -97,7 +97,6 @@ const projects = [
 ];
 
 const skills = [
-  // Frontend
   { name: 'React.js', category: 'Frontend', proficiency: 90, order: 1 },
   { name: 'Next.js', category: 'Frontend', proficiency: 88, order: 2 },
   { name: 'TypeScript', category: 'Frontend', proficiency: 88, order: 3 },
@@ -110,21 +109,18 @@ const skills = [
   { name: 'TanStack Query', category: 'Frontend', proficiency: 82, order: 10 },
   { name: 'Bootstrap', category: 'Frontend', proficiency: 85, order: 11 },
 
-  // Backend
   { name: 'Node.js', category: 'Backend', proficiency: 90, order: 1 },
   { name: 'Express.js', category: 'Backend', proficiency: 90, order: 2 },
   { name: 'RESTful APIs', category: 'Backend', proficiency: 90, order: 3 },
   { name: 'JWT Authentication', category: 'Backend', proficiency: 85, order: 4 },
   { name: 'Middleware', category: 'Backend', proficiency: 85, order: 5 },
 
-  // Database
   { name: 'MongoDB', category: 'Database', proficiency: 90, order: 1 },
   { name: 'Mongoose', category: 'Database', proficiency: 90, order: 2 },
   { name: 'Redis', category: 'Database', proficiency: 78, order: 3 },
   { name: 'SQL', category: 'Database', proficiency: 75, order: 4 },
   { name: 'Database Design', category: 'Database', proficiency: 85, order: 5 },
 
-  // Tools
   { name: 'Git', category: 'Tools', proficiency: 90, order: 1 },
   { name: 'GitHub', category: 'Tools', proficiency: 90, order: 2 },
   { name: 'VS Code', category: 'Tools', proficiency: 95, order: 3 },
@@ -133,31 +129,33 @@ const skills = [
   { name: 'NPM', category: 'Tools', proficiency: 90, order: 6 },
   { name: 'Webpack', category: 'Tools', proficiency: 75, order: 7 },
 
-  // Testing
   { name: 'Selenium WebDriver', category: 'Testing', proficiency: 80, order: 1 },
   { name: 'WebDriverIO', category: 'Testing', proficiency: 75, order: 2 },
   { name: 'Mocha', category: 'Testing', proficiency: 70, order: 3 },
   { name: 'Unit Testing', category: 'Testing', proficiency: 75, order: 4 },
 ];
 
+/**
+ * Deletes all existing Projects and Skills, then re-inserts the
+ * data defined above. Safe to run repeatedly — every run produces
+ * a clean, identical dataset.
+ */
+const resetData = async () => {
+  console.log('Clearing existing projects and skills...');
+  const deletedProjects = await Project.deleteMany({});
+  const deletedSkills = await Skill.deleteMany({});
+  console.log(`  Removed ${deletedProjects.deletedCount} projects, ${deletedSkills.deletedCount} skills`);
+
+  console.log('Inserting fresh data...');
+  const insertedProjects = await Project.insertMany(projects);
+  const insertedSkills = await Skill.insertMany(skills);
+  console.log(`  Inserted ${insertedProjects.length} projects, ${insertedSkills.length} skills`);
+};
+
 const seedDatabase = async () => {
   try {
     await connectDB();
-
-    // Clear existing data
-    console.log('Clearing existing data...');
-    await Project.deleteMany({});
-    await Skill.deleteMany({});
-
-    // Insert new data
-    console.log('Inserting projects...');
-    await Project.insertMany(projects);
-    console.log(`✓ Inserted ${projects.length} projects`);
-
-    console.log('Inserting skills...');
-    await Skill.insertMany(skills);
-    console.log(`✓ Inserted ${skills.length} skills`);
-
+    await resetData();
     console.log('\n✓ Database seeded successfully!');
     process.exit(0);
   } catch (error) {
