@@ -90,7 +90,7 @@ const projects = [
     githubUrl: null,
     liveUrl: 'https://earlywrite.vercel.app/',
     imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',
-    category: 'AI/ML,Frontend',
+    category: 'AI/Frontend',
     featured: true,
     order: 4,
   },
