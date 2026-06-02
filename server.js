@@ -62,6 +62,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+
+const https = require('https');
+setInterval(() => {
+  https.get('https://portfolio-6194.onrender.com/api/health', (res) => {
+    console.log('Self-ping:', res.statusCode);
+  }).on('error', (e) => console.error('Ping error:', e));
+}, 10 * 60 * 1000);
+
 app.listen(PORT, () => {
   console.log(`✓ Server running on port ${PORT}`);
   console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
