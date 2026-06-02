@@ -161,10 +161,18 @@
   background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
 }
 
-.project-badge {
+.project-badges {
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  z-index: 2;
+}
+
+.project-badge {
   padding: 0.35rem 1rem;
   background: var(--color-accent);
   color: #000;
@@ -174,7 +182,6 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  z-index: 2;
   box-shadow: 0 4px 16px rgba(0,255,170,0.4);
 }
 

@@ -404,7 +404,7 @@ const ProjectCard = ({ project, index }) => (
       </div>
     </div>
     <div className="project-info">
-      <span className="project-category">{project.category}</span>
+      <span className="project-category">{(Array.isArray(project.category) ? project.category : [project.category]).filter(Boolean).join(' · ')}</span>
       <h3 className="project-title">{project.title}</h3>
       <p className="project-description">{project.description}</p>
       <div className="project-tech">

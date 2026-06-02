@@ -38,7 +38,7 @@ const Projects = () => {
     if (category === 'All') {
       setFilteredProjects(projects);
     } else {
-      setFilteredProjects(projects.filter(p => p.category === category));
+      setFilteredProjects(projects.filter(p => (p.category || []).includes(category)));
     }
   };
 
@@ -149,7 +149,13 @@ const ProjectCard = ({ project, index }) => (
         }
         <div className="image-overlay" />
       </div>
-      <span className="project-badge">{project.category}</span>
+      <div className="project-badges">
+        {(Array.isArray(project.category) ? project.category : [project.category])
+          .filter(Boolean)
+          .map((cat) => (
+            <span key={cat} className="project-badge">{cat}</span>
+          ))}
+      </div>
     </div>
 
     <div className="project-body">

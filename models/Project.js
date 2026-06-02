@@ -30,9 +30,9 @@ const projectSchema = new mongoose.Schema({
     default: '/images/default-project.jpg'
   },
   category: {
-    type: String,
-    enum: ['Full-Stack', 'Frontend', 'Backend', 'AI/ML', 'AI/Full-Stack', 'AI,ML', 'Other'],
-    default: 'Full-Stack'
+    type: [String],
+    enum: ['Full-Stack', 'Frontend', 'Backend', 'AI/ML', 'Other'],
+    default: ['Full-Stack']
   },
   featured: {
     type: Boolean,
