@@ -18,74 +18,97 @@ const connectDB = async () => {
 
 const projects = [
   {
+    title: 'SkillSeal — AI Skill Verification Platform',
+    description:
+      'An AI-powered skill verification SaaS with a proctored assessment engine, anti-cheat monitoring, cryptographic certificates, and a recruiter dashboard. Supports Free, Pro, and Recruiter subscription tiers via Stripe.',
+    technologies: ['React 18', 'TypeScript', 'Node.js', 'Express', 'MongoDB Atlas', 'Redis', 'Cloudinary', 'Brevo', 'Gemini API', 'Stripe'],
+    features: [
+      'Proctored assessments powered by the Gemini API with anti-cheat monitoring',
+      'Cryptographically signed skill certificates',
+      'Recruiter dashboard for candidate verification',
+      'Stripe subscription model (Free / Pro / Recruiter tiers)',
+      'Cloudinary-backed media storage and Brevo email notifications',
+      'TypeScript monorepo — Express backend on Render, React/Vite frontend on Vercel',
+    ],
+    githubUrl: 'https://github.com/fahadali0077/SkillSeal',
+    liveUrl: 'https://skillseal.tech',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800',
+    category: 'AI/Full-Stack',
+    featured: true,
+    order: 1,
+  },
+  {
     title: 'School Management System',
     description:
-      'A full-stack MERN platform for schools — covering student registration, teacher assignments, class scheduling, and role-based admin dashboards.',
+      'A full-stack MERN platform for schools — covering student registration, teacher assignments, class scheduling, and role-based admin dashboards. Deployed on Railway with MongoDB Atlas.',
     technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'JWT', 'Redux'],
     features: [
-      'JWT authentication with role-based access control',
+      'JWT authentication with role-based access control (admin, teacher, student)',
       'Student & teacher profiles with full CRUD operations',
       'Class scheduling and assignment tracking',
       'Responsive design for mobile and desktop',
       'RESTful API with robust error handling',
     ],
-    githubUrl: 'https://github.com/Fahad-Ali/MERN-School-Management-System',
+    githubUrl: 'https://github.com/fahadali0077/MERN-School-Management-System',
     liveUrl: 'https://www.school-management-system.me/',
     imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800',
     category: 'Full-Stack',
     featured: true,
-    order: 1,
+    order: 2,
   },
   {
-    title: 'MERN Shop — E-Commerce',
+    title: 'MERNShop — E-Commerce Storefront',
     description:
-      'A React-based e-commerce storefront with a complete, polished UI — product catalog, cart, and checkout flow. Backend integration is currently in progress.',
-    technologies: ['React', 'Redux', 'CSS', 'JavaScript'],
+      'A polished, fully deployed e-commerce frontend built across nine modules — product catalog, cart, checkout flow, account pages, and an admin dashboard — with professional UI polish throughout.',
+    technologies: ['Next.js 15', 'TypeScript', 'Tailwind CSS', 'Zustand', 'TanStack Query', 'Shadcn/ui'],
     features: [
-      'Fully functional product catalog with filtering',
-      'Cart and checkout UI flow',
-      'Responsive storefront for all screen sizes',
-      'State management with Redux',
-      'Backend (Node.js / Express / MongoDB) in active development',
+      'Product catalog with filtering and search',
+      'Full cart and multi-step checkout flow',
+      'Account pages and order history',
+      'Admin dashboard for product and order management',
+      'Built on the Next.js 15 App Router with type-safe state management',
     ],
-    githubUrl: 'https://github.com/Fahad-Ali/MERN-Shop',
+    githubUrl: 'https://github.com/fahadali0077/MERNShop',
     liveUrl: 'https://mern-shop-swart.vercel.app/',
     imageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800',
     category: 'Frontend',
     featured: true,
-    order: 2,
+    order: 3,
   },
   {
     title: 'EarlyWrite — Dysgraphia Detection',
     description:
-      'An AI-powered bilingual web platform that detects dysgraphia indicators in children\'s handwriting. Supports both English and Urdu, with word-level and sentence-level analysis modules delivering diagnostic feedback in real time.',
-    technologies: ['React', 'Node.js', 'Python', 'TensorFlow', 'MongoDB', 'AWS'],
+      'An AI-powered bilingual web platform that detects dysgraphia indicators in children\'s handwriting. Supports both English and Urdu, with word-level and sentence-level analysis modules delivering diagnostic feedback in real time. Final-year project supervised by Dr. Iqra Munir.',
+    technologies: ['React', 'Node.js', 'Python', 'TensorFlow', 'MongoDB', 'AWS S3'],
     features: [
       'Bilingual support for English and Urdu handwriting analysis',
       'Word-level and sentence-level diagnostic modules',
-      'Deep learning models for pattern recognition',
-      'Modular web interface with language & analysis-level selection',
+      'Deep learning models for handwriting pattern recognition',
+      'Modular interface with language & analysis-level selection',
       'Results delivered within 30 seconds per analysis',
     ],
     githubUrl: null,
     liveUrl: 'https://earlywrite.vercel.app/',
     imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',
-    category: 'AI,ML',
+    category: 'AI/ML',
     featured: true,
-    order: 3,
+    order: 4,
   },
-
 ];
 
 const skills = [
   // Frontend
   { name: 'React.js', category: 'Frontend', proficiency: 90, order: 1 },
-  { name: 'JavaScript (ES6+)', category: 'Frontend', proficiency: 90, order: 2 },
-  { name: 'HTML5', category: 'Frontend', proficiency: 95, order: 3 },
-  { name: 'CSS3', category: 'Frontend', proficiency: 90, order: 4 },
-  { name: 'Redux', category: 'Frontend', proficiency: 85, order: 5 },
-  { name: 'Tailwind CSS', category: 'Frontend', proficiency: 85, order: 6 },
-  { name: 'Bootstrap', category: 'Frontend', proficiency: 85, order: 7 },
+  { name: 'Next.js', category: 'Frontend', proficiency: 88, order: 2 },
+  { name: 'TypeScript', category: 'Frontend', proficiency: 88, order: 3 },
+  { name: 'JavaScript (ES6+)', category: 'Frontend', proficiency: 90, order: 4 },
+  { name: 'HTML5', category: 'Frontend', proficiency: 95, order: 5 },
+  { name: 'CSS3', category: 'Frontend', proficiency: 90, order: 6 },
+  { name: 'Tailwind CSS', category: 'Frontend', proficiency: 88, order: 7 },
+  { name: 'Redux', category: 'Frontend', proficiency: 85, order: 8 },
+  { name: 'Zustand', category: 'Frontend', proficiency: 85, order: 9 },
+  { name: 'TanStack Query', category: 'Frontend', proficiency: 82, order: 10 },
+  { name: 'Bootstrap', category: 'Frontend', proficiency: 85, order: 11 },
 
   // Backend
   { name: 'Node.js', category: 'Backend', proficiency: 90, order: 1 },
@@ -97,8 +120,9 @@ const skills = [
   // Database
   { name: 'MongoDB', category: 'Database', proficiency: 90, order: 1 },
   { name: 'Mongoose', category: 'Database', proficiency: 90, order: 2 },
-  { name: 'SQL', category: 'Database', proficiency: 75, order: 3 },
-  { name: 'Database Design', category: 'Database', proficiency: 85, order: 4 },
+  { name: 'Redis', category: 'Database', proficiency: 78, order: 3 },
+  { name: 'SQL', category: 'Database', proficiency: 75, order: 4 },
+  { name: 'Database Design', category: 'Database', proficiency: 85, order: 5 },
 
   // Tools
   { name: 'Git', category: 'Tools', proficiency: 90, order: 1 },
@@ -113,7 +137,7 @@ const skills = [
   { name: 'Selenium WebDriver', category: 'Testing', proficiency: 80, order: 1 },
   { name: 'WebDriverIO', category: 'Testing', proficiency: 75, order: 2 },
   { name: 'Mocha', category: 'Testing', proficiency: 70, order: 3 },
-  { name: 'Unit Testing', category: 'Testing', proficiency: 75, order: 4 }
+  { name: 'Unit Testing', category: 'Testing', proficiency: 75, order: 4 },
 ];
 
 const seedDatabase = async () => {
