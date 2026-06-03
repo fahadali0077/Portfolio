@@ -62,10 +62,15 @@ body {
 body.custom-cursor-active { cursor: none; }
 body.custom-cursor-active a,
 body.custom-cursor-active button,
-body.custom-cursor-active input,
-body.custom-cursor-active textarea,
 body.custom-cursor-active [role="button"],
 body.custom-cursor-active .back-to-top { cursor: none; }
+
+/* Over text fields, restore the native I-beam caret so typing stays
+   legible — the orb is hidden here (handled in JS). This must win over
+   the custom-cursor-active rule, so it comes after and is specific. */
+body.custom-cursor-active input,
+body.custom-cursor-active textarea,
+body.custom-cursor-active [contenteditable="true"] { cursor: text; }
 
 @media (pointer: coarse) {
   /* restore cursor on touch devices that have no custom cursor */

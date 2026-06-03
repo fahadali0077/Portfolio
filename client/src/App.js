@@ -106,13 +106,17 @@ const isMobile = typeof window !== 'undefined'
   ? window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
   : false;
 
-/* Selector for elements that should trigger the cursor's hover state */
-const INTERACTIVE_SELECTOR = 'a, button, [role="button"], .filter-btn, .card, input, textarea, label';
+/* Selector for elements that should trigger the cursor's hover state.
+   Text fields are deliberately excluded — over those we hide the orb
+   entirely and restore the native text caret so typing stays legible. */
+const INTERACTIVE_SELECTOR = 'a, button, [role="button"], .filter-btn, .card';
+const TEXT_FIELD_SELECTOR = 'input, textarea, [contenteditable="true"]';
 
 /* ─── Beautiful cursor: one soft glowing orb that follows smoothly ─── */
 const CustomCursor = () => {
   const cursorRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [isOverText, setIsOverText] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const pos = useRef({ x: -200, y: -200 });
   const current = useRef({ x: -200, y: -200 });
@@ -141,13 +145,31 @@ const CustomCursor = () => {
     // every current AND future interactive element, so there's no need for a
     // MutationObserver re-scanning the whole DOM on every Framer Motion tick.
     const onOver = (e) => {
-      if (e.target.closest && e.target.closest(INTERACTIVE_SELECTOR)) {
+      if (!e.target.closest) return;
+      // Over a text field: hide the orb and show the native caret.
+      if (e.target.closest(TEXT_FIELD_SELECTOR)) {
+        setIsOverText(true);
+        setIsHovering(false);
+        document.body.classList.add('over-text-field');
+        return;
+      }
+      if (e.target.closest(INTERACTIVE_SELECTOR)) {
         setIsHovering(true);
       }
     };
     const onOut = (e) => {
+      if (!e.target.closest) return;
+      // Leaving a text field for something that isn't a text field.
+      if (e.target.closest(TEXT_FIELD_SELECTOR)) {
+        const to = e.relatedTarget;
+        if (!to || !(to.closest && to.closest(TEXT_FIELD_SELECTOR))) {
+          setIsOverText(false);
+          document.body.classList.remove('over-text-field');
+        }
+        return;
+      }
       // Only clear when leaving an interactive element for a non-interactive one
-      if (e.target.closest && e.target.closest(INTERACTIVE_SELECTOR)) {
+      if (e.target.closest(INTERACTIVE_SELECTOR)) {
         const to = e.relatedTarget;
         if (!to || !(to.closest && to.closest(INTERACTIVE_SELECTOR))) {
           setIsHovering(false);
@@ -179,6 +201,7 @@ const CustomCursor = () => {
       document.removeEventListener('mouseover', onOver);
       document.removeEventListener('mouseout', onOut);
       document.body.classList.remove('custom-cursor-active');
+      document.body.classList.remove('over-text-field');
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -215,7 +238,7 @@ const CustomCursor = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        opacity: isVisible ? 1 : 0,
+        opacity: isVisible && !isOverText ? 1 : 0,
         transitionProperty: 'transform, background, opacity',
       }}>
         {/* Inner crisp dot */}
