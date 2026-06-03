@@ -127,6 +127,9 @@ const isMobile = typeof window !== 'undefined'
   ? window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
   : false;
 
+/* Selector for elements that should trigger the cursor's hover state */
+const INTERACTIVE_SELECTOR = 'a, button, [role="button"], .filter-btn, .card, input, textarea, label';
+
 /* ─── Beautiful cursor: one soft glowing orb that follows smoothly ─── */
 const CustomCursor = () => {
   const cursorRef = useRef(null);
@@ -142,6 +145,11 @@ const CustomCursor = () => {
   useEffect(() => {
     if (isMobile) return;
 
+    // Only hide the native cursor once the custom orb is actually mounted
+    // and running. If this effect never runs (JS error, slow bundle, or a
+    // device misclassified as non-touch), the native cursor stays visible.
+    document.body.classList.add('custom-cursor-active');
+
     const onMove = (e) => {
       pos.current = { x: e.clientX, y: e.clientY };
       if (!isVisibleRef.current) {
@@ -150,8 +158,23 @@ const CustomCursor = () => {
       }
     };
 
-    const onEnter = () => setIsHovering(true);
-    const onLeave = () => setIsHovering(false);
+    // Event delegation: a single pair of listeners on the document handles
+    // every current AND future interactive element, so there's no need for a
+    // MutationObserver re-scanning the whole DOM on every Framer Motion tick.
+    const onOver = (e) => {
+      if (e.target.closest && e.target.closest(INTERACTIVE_SELECTOR)) {
+        setIsHovering(true);
+      }
+    };
+    const onOut = (e) => {
+      // Only clear when leaving an interactive element for a non-interactive one
+      if (e.target.closest && e.target.closest(INTERACTIVE_SELECTOR)) {
+        const to = e.relatedTarget;
+        if (!to || !(to.closest && to.closest(INTERACTIVE_SELECTOR))) {
+          setIsHovering(false);
+        }
+      }
+    };
 
     const animate = () => {
       // Bug 12 — Snappier lerp (was 0.08, felt laggy on fast moves)
@@ -168,28 +191,15 @@ const CustomCursor = () => {
 
     raf.current = requestAnimationFrame(animate);
     window.addEventListener('mousemove', onMove);
-
-    // Bug 2 — Re-attach hover listeners whenever new elements appear in the DOM
-    const attachHoverListeners = () => {
-      const tags = document.querySelectorAll('a, button, [role="button"], .filter-btn, .card, input, textarea');
-      tags.forEach(el => {
-        // Avoid attaching duplicates by removing first
-        el.removeEventListener('mouseenter', onEnter);
-        el.removeEventListener('mouseleave', onLeave);
-        el.addEventListener('mouseenter', onEnter);
-        el.addEventListener('mouseleave', onLeave);
-      });
-    };
-
-    attachHoverListeners();
-
-    const observer = new MutationObserver(attachHoverListeners);
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
 
     return () => {
       cancelAnimationFrame(raf.current);
       window.removeEventListener('mousemove', onMove);
-      observer.disconnect();
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseout', onOut);
+      document.body.classList.remove('custom-cursor-active');
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -199,6 +209,7 @@ const CustomCursor = () => {
   return (
     <div
       ref={cursorRef}
+      className="custom-cursor"
       aria-hidden="true"
       style={{
         position: 'fixed',

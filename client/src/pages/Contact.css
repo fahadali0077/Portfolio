@@ -413,21 +413,8 @@ textarea.form-input {
   line-height: 1.7;
 }
 
-.success-timer-label {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--color-text-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.success-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-dark));
-  box-shadow: 0 0 10px rgba(0,255,170,0.5);
+.success-reset-btn {
+  margin-top: 1.75rem;
 }
 
 /* Responsive */

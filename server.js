@@ -63,12 +63,16 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-const https = require('https');
-setInterval(() => {
-  https.get('https://portfolio-6194.onrender.com/api/health', (res) => {
-    console.log('Self-ping:', res.statusCode);
-  }).on('error', (e) => console.error('Ping error:', e));
-}, 10 * 60 * 1000);
+// Keep-alive self-ping (only in production, only if a URL is configured).
+// Prevents free-tier hosts like Render from spinning the service down.
+if (process.env.NODE_ENV === 'production' && process.env.SELF_PING_URL) {
+  const https = require('https');
+  setInterval(() => {
+    https.get(`${process.env.SELF_PING_URL}/api/health`, (res) => {
+      console.log('Self-ping:', res.statusCode);
+    }).on('error', (e) => console.error('Ping error:', e.message));
+  }, 10 * 60 * 1000);
+}
 
 app.listen(PORT, () => {
   console.log(`✓ Server running on port ${PORT}`);

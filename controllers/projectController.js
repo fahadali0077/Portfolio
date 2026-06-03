@@ -4,7 +4,8 @@ const Project = require('../models/Project');
 exports.getAllProjects = async (req, res) => {
   try {
     const { category } = req.query;
-    const filter = category ? { category } : {};
+    // category is an array field; $in matches docs containing the value.
+    const filter = category ? { category: { $in: [category] } } : {};
     
     const projects = await Project.find(filter).sort({ order: 1, createdAt: -1 });
     

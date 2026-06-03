@@ -2,13 +2,51 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
-import { FaGithub, FaArrowRight, FaCode, FaDatabase, FaTools, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaGithub, FaArrowRight, FaCode, FaDatabase, FaTools, FaServer, FaVial, FaExternalLinkAlt } from 'react-icons/fa';
 import { HiOutlineLocationMarker } from 'react-icons/hi';
 import { useInView } from 'react-intersection-observer';
 import axios from 'axios';
 import './Home.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
+
+// Static fallback so the page is never empty if the API is cold/down
+// (Render free tier cold-starts can take 30s+ or fail on first hit).
+const FALLBACK_PROJECTS = [
+  {
+    _id: 'fb-skillseal',
+    title: 'SkillSeal — AI Skill Verification Platform',
+    description:
+      'An AI-powered skill verification SaaS with a proctored assessment engine, anti-cheat monitoring, cryptographic certificates, and a recruiter dashboard.',
+    technologies: ['React', 'TypeScript', 'Node.js'],
+    githubUrl: 'https://github.com/fahadali0077/SkillSeal',
+    liveUrl: 'https://skillseal.tech',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800',
+    category: ['AI/ML', 'Full-Stack'],
+  },
+  {
+    _id: 'fb-mernshop',
+    title: 'MERNShop — E-Commerce Storefront',
+    description:
+      'A polished, fully deployed e-commerce frontend built across nine modules — catalog, cart, checkout, account pages, and an admin dashboard.',
+    technologies: ['Next.js 15', 'TypeScript', 'Tailwind CSS'],
+    githubUrl: 'https://github.com/fahadali0077/MERNShop',
+    liveUrl: 'https://mern-shop-swart.vercel.app/',
+    imageUrl: '/mernshop.png',
+    category: ['Full-Stack'],
+  },
+  {
+    _id: 'fb-earlywrite',
+    title: 'EarlyWrite — Dysgraphia Detection',
+    description:
+      "An AI-powered bilingual platform that detects dysgraphia indicators in children's handwriting, supporting English and Urdu with real-time diagnostic feedback.",
+    technologies: ['React', 'Python', 'TensorFlow'],
+    githubUrl: null,
+    liveUrl: 'https://earlywrite.vercel.app/',
+    imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',
+    category: ['AI/ML', 'Frontend'],
+  },
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,7 +68,9 @@ const Home = () => {
 
   const { scrollY } = useScroll();
   const heroY = useTransform(scrollY, [0, 600], [0, -80]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  // Fade only once the hero is genuinely scrolling away, so it doesn't
+  // disappear while still partly on-screen on laptop-height viewports.
+  const heroOpacity = useTransform(scrollY, [0, 550], [1, 0]);
 
   useEffect(() => {
     Promise.all([fetchFeaturedProjects(), fetchSkills()]).finally(() => setLoading(false));
@@ -39,9 +79,12 @@ const Home = () => {
   const fetchFeaturedProjects = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/projects/featured`);
-      setProjects(response.data.data || []);
+      const data = response.data.data || [];
+      // If the API responds but returns nothing, still show the fallback.
+      setProjects(data.length > 0 ? data : FALLBACK_PROJECTS);
     } catch {
-      setProjects([]);
+      // API down / cold-starting — show static fallback instead of an empty page.
+      setProjects(FALLBACK_PROJECTS);
     }
   };
 
@@ -237,9 +280,9 @@ const Home = () => {
 
             <div className="about-sidebar">
               {[
-                { num: '3+', label: 'Projects Completed' },
-                { num: '2+', label: 'Years Experience' },
-                { num: '100%', label: 'Client Satisfaction' },
+                { num: '6+', label: 'Projects Built' },
+                { num: '15+', label: 'Technologies' },
+                { num: '4', label: 'Live Deployments' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -281,8 +324,10 @@ const Home = () => {
             {skills && Object.keys(skills).length > 0 && (
               <>
                 <SkillCategory title="Frontend" icon={<FaCode />} skills={skills.Frontend || []} inView={skillsInView} delay={0} />
-                <SkillCategory title="Backend" icon={<FaDatabase />} skills={skills.Backend || []} inView={skillsInView} delay={0.1} />
-                <SkillCategory title="Tools & Database" icon={<FaTools />} skills={[...(skills.Tools || []), ...(skills.Database || [])]} inView={skillsInView} delay={0.2} />
+                <SkillCategory title="Backend" icon={<FaServer />} skills={skills.Backend || []} inView={skillsInView} delay={0.1} />
+                <SkillCategory title="Database" icon={<FaDatabase />} skills={skills.Database || []} inView={skillsInView} delay={0.2} />
+                <SkillCategory title="Tools" icon={<FaTools />} skills={skills.Tools || []} inView={skillsInView} delay={0.3} />
+                <SkillCategory title="Testing" icon={<FaVial />} skills={skills.Testing || []} inView={skillsInView} delay={0.4} />
               </>
             )}
           </div>

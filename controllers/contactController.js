@@ -21,20 +21,32 @@ exports.submitContact = async (req, res) => {
 
     const { name, email, subject, message } = req.body;
 
+    // Persist the submission first so nothing is lost even if email fails.
     const contact = new Contact({ name, email, subject, message });
     await contact.save();
 
-    res.status(201).json({
-      success: true,
-      message: 'Message sent successfully! I will get back to you soon.',
-      data: contact
-    });
+    // Verify email is configured before attempting to send.
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      console.error('Email not configured: EMAIL_USER / EMAIL_PASSWORD missing.');
+      // Contact is saved, so report partial success rather than failing the user.
+      return res.status(201).json({
+        success: true,
+        message: 'Message received! I will get back to you soon.',
+        data: contact
+      });
+    }
 
+    // Send emails BEFORE responding, so any failure is surfaced to the client.
     try {
       const transporter = createTransporter();
+      const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+      const notifyAddress = process.env.EMAIL_TO || process.env.EMAIL_USER;
+
+      // Notification to site owner
       await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: process.env.EMAIL_TO,
+        from: fromAddress,
+        to: notifyAddress,
+        replyTo: email,
         subject: `Portfolio Contact: ${subject}`,
         html: `<h2>New Contact Form Submission</h2>
           <p><strong>Name:</strong> ${name}</p>
@@ -43,8 +55,10 @@ exports.submitContact = async (req, res) => {
           <p><strong>Message:</strong></p>
           <p>${message.replace(/\n/g, '<br>')}</p>`
       });
+
+      // Auto-reply confirmation to the sender
       await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
+        from: fromAddress,
         to: email,
         subject: 'Thanks for reaching out!',
         html: `<h2>Hi ${name},</h2>
@@ -53,11 +67,23 @@ exports.submitContact = async (req, res) => {
       });
     } catch (emailError) {
       console.error('Email sending failed:', emailError);
+      // Contact is already saved; tell the user it was received but email delivery had an issue.
+      return res.status(201).json({
+        success: true,
+        message: 'Message received! (Email confirmation could not be sent, but I have your message.)',
+        data: contact
+      });
     }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Message sent successfully! I will get back to you soon.',
+      data: contact
+    });
 
   } catch (error) {
     console.error('Contact submission error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to send message. Please try again later.'
     });
@@ -69,6 +95,7 @@ exports.getAllContacts = async (req, res) => {
     const contacts = await Contact.find().sort({ createdAt: -1 });
     res.json({ success: true, count: contacts.length, data: contacts });
   } catch (error) {
+    console.error('Error fetching contacts:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch contacts' });
   }
 };

@@ -55,18 +55,24 @@ body {
   color: var(--color-text);
   overflow-x: hidden;
   line-height: 1.6;
-  cursor: none; /* hide native cursor — custom cursor is rendered in JS */
 }
+
+/* Only hide the native cursor once the JS orb is confirmed mounted.
+   If the cursor effect never runs, the native cursor stays visible. */
+body.custom-cursor-active { cursor: none; }
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active input,
+body.custom-cursor-active textarea,
+body.custom-cursor-active [role="button"],
+body.custom-cursor-active .back-to-top { cursor: none; }
 
 @media (pointer: coarse) {
   /* restore cursor on touch devices that have no custom cursor */
-  body { cursor: auto; }
-  /* hide the JS cursor element in case isMobile detection fires late */
+  body, body.custom-cursor-active { cursor: auto; }
   .back-to-top { cursor: pointer; }
   /* hide custom cursor div on touch devices */
-  [aria-hidden="true"][style*="position: fixed"][style*="z-index: 99999"] {
-    display: none !important;
-  }
+  .custom-cursor { display: none !important; }
 }
 
 /* Scrollbar */
@@ -395,7 +401,7 @@ a {
   border: none;
   background: var(--color-surface);
   border-radius: 50%;
-  cursor: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;

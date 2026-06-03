@@ -8,9 +8,9 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: FaLinkedin, url: 'https://www.linkedin.com/in/fahad-ali-840a093a8', label: 'LinkedIn' },
+    { icon: FaLinkedin, url: 'https://www.linkedin.com/in/fahadali-fullstack-dev', label: 'LinkedIn' },
     { icon: FaGithub, url: 'https://github.com/fahadali0077', label: 'GitHub' },
-    { icon: FaEnvelope, url: 'mailto:fahadj698@gmail.com', label: 'Email' },
+    { icon: FaEnvelope, url: 'mailto:fahada00698@gmail.com', label: 'Email' },
     { icon: FaPhone, url: 'tel:+923099639354', label: 'Phone' }
   ];
 

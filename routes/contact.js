@@ -3,6 +3,23 @@ const router = express.Router();
 const { body } = require('express-validator');
 const contactController = require('../controllers/contactController');
 
+// Admin auth guard — requires a matching key in the x-admin-key header.
+// If ADMIN_API_KEY is unset, the admin route is locked down entirely.
+const requireAdmin = (req, res, next) => {
+  const expected = process.env.ADMIN_API_KEY;
+  if (!expected) {
+    return res.status(503).json({
+      success: false,
+      message: 'Admin endpoint is not configured.'
+    });
+  }
+  const provided = req.get('x-admin-key');
+  if (!provided || provided !== expected) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+  next();
+};
+
 // Validation middleware
 const contactValidation = [
   body('name')
@@ -27,7 +44,7 @@ const contactValidation = [
 // POST /api/contact - Submit contact form
 router.post('/', contactValidation, contactController.submitContact);
 
-// GET /api/contact - Get all contacts (for admin)
-router.get('/', contactController.getAllContacts);
+// GET /api/contact - Get all contacts (admin only)
+router.get('/', requireAdmin, contactController.getAllContacts);
 
 module.exports = router;

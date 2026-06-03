@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaGithub, FaLinkedin, FaCheckCircle, FaExclamationCircle, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
@@ -27,14 +27,8 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef(null);
-  const resetTimerRef = useRef(null);
 
-  // Cleanup timer on unmount to prevent setState on an unmounted component
-  useEffect(() => {
-    return () => {
-      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-    };
-  }, []);
+  // (No auto-dismiss timer — the success screen stays until the user dismisses it.)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,9 +62,8 @@ const Contact = () => {
         setFormData({ name: '', email: '', subject: '', message: '' });
         setTouched({});
         setErrors({});
-        // Scroll the form into view so user sees success message immediately
+        // Scroll the success message into view so the user sees it immediately.
         setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-        resetTimerRef.current = setTimeout(() => setSubmitted(false), 5000);
       } else {
         setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
       }
@@ -94,13 +87,13 @@ const Contact = () => {
   };
 
   const contactInfo = [
-    { icon: FaEnvelope, label: 'Email', value: 'fahadj698@gmail.com', link: 'mailto:fahadj698@gmail.com' },
+    { icon: FaEnvelope, label: 'Email', value: 'fahada00698@gmail.com', link: 'mailto:fahada00698@gmail.com' },
     { icon: FaPhone, label: 'Phone', value: '+92-309-9639354', link: 'tel:+923099639354' },
     { icon: FaMapMarkerAlt, label: 'Location', value: 'Lahore, Pakistan', link: null }
   ];
 
   const socialLinks = [
-    { icon: FaLinkedin, url: 'https://www.linkedin.com/in/fahad-ali-840a093a8', label: 'LinkedIn' },
+    { icon: FaLinkedin, url: 'https://www.linkedin.com/in/fahadali-fullstack-dev', label: 'LinkedIn' },
     { icon: FaGithub, url: 'https://github.com/fahadali0077', label: 'GitHub' }
   ];
 
@@ -245,20 +238,18 @@ const Contact = () => {
                   <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48 }}>
                     Thanks for reaching out. I'll get back to you as soon as possible.
                   </motion.p>
-                  <motion.p
-                    className="success-timer-label"
+                  <motion.button
+                    type="button"
+                    className="btn btn-outline success-reset-btn"
+                    onClick={() => setSubmitted(false)}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                   >
-                    This message will close in 5s
-                  </motion.p>
-                  <motion.div
-                    className="success-bar"
-                    initial={{ width: '100%' }}
-                    animate={{ width: '0%' }}
-                    transition={{ duration: 5, ease: 'linear' }}
-                  />
+                    Send another message
+                  </motion.button>
                 </motion.div>
               ) : (
                 <motion.form

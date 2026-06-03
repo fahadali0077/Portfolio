@@ -144,9 +144,22 @@ const ProjectCard = ({ project, index }) => (
     <div className="project-header">
       <div className="project-image">
         {project.imageUrl
-          ? <img src={project.imageUrl} alt={project.title} />
-          : <div className="project-image-no-img">[ {project.title} ]</div>
-        }
+          ? <img
+              src={project.imageUrl}
+              alt={project.title}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.nextElementSibling;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+          : null}
+        <div
+          className="project-image-no-img"
+          style={{ display: project.imageUrl ? 'none' : 'flex' }}
+        >
+          [ {project.title} ]
+        </div>
         <div className="image-overlay" />
       </div>
       <div className="project-badges">

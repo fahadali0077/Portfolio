@@ -81,10 +81,17 @@ EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-app-password
 EMAIL_FROM=your-email@gmail.com
-EMAIL_TO=fahadj698@gmail.com
+EMAIL_TO=fahada00698@gmail.com
 
 # Client URL
 CLIENT_URL=http://localhost:3000
+
+# Admin endpoint key — required to access GET /api/contact.
+# If unset, the admin route is disabled entirely (returns 503).
+ADMIN_API_KEY=choose-a-long-random-secret
+
+# Keep-alive ping (production only). Set to your deployed backend URL.
+SELF_PING_URL=https://your-app.onrender.com
 ```
 
 #### Setting up Gmail for Email Notifications:
@@ -365,9 +372,9 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 👤 Author
 
 **Fahad Ali**
-- Email: fahadj698@gmail.com
+- Email: fahada00698@gmail.com
 - Phone: +92-309-9639354
-- LinkedIn: [Fahad-Ali](https://www.linkedin.com/in/fahad-ali-840a093a8)
+- LinkedIn: [Fahad-Ali](https://www.linkedin.com/in/fahadali-fullstack-dev)
 - GitHub: [Fahad-Ali](https://github.com/fahadali0077)
 
 ## 🙏 Acknowledgments
