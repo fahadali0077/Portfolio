@@ -47,4 +47,7 @@ router.post('/', contactValidation, contactController.submitContact);
 // GET /api/contact - Get all contacts (admin only)
 router.get('/', requireAdmin, contactController.getAllContacts);
 
+// GET /api/contact/test-email - Diagnose email config (admin only)
+router.get('/test-email', requireAdmin, contactController.testEmail);
+
 module.exports = router;

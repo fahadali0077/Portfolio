@@ -1,21 +1,45 @@
 const Contact = require('../models/Contact');
 const { validationResult } = require('express-validator');
-const nodemailer = require('nodemailer');
 
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false, // STARTTLS on port 587
-    auth: {
-      user: process.env.EMAIL_USER, // Brevo SMTP login (e.g. xxxx@smtp-brevo.com)
-      pass: process.env.EMAIL_PASSWORD // Brevo SMTP key
+// Brevo HTTP API sender. Uses HTTPS (port 443) instead of SMTP (port 587),
+// because many hosts (e.g. Render's free tier) block outbound SMTP ports,
+// which causes "Connection timeout" on smtp-relay.brevo.com. The HTTP API
+// goes over 443 and is not blocked.
+//
+// Requires BREVO_API_KEY — created in Brevo under SMTP & API → API Keys
+// (this is a different key from the SMTP key).
+const sendEmail = async ({ to, toName, subject, html, replyTo, senderName }) => {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    throw new Error('BREVO_API_KEY is not set');
+  }
+  const senderEmail = process.env.EMAIL_FROM || 'fahada00698@gmail.com';
+
+  const payload = {
+    sender: { email: senderEmail, name: senderName || 'Fahad Ali' },
+    to: [{ email: to, name: toName || to }],
+    subject,
+    htmlContent: html
+  };
+  if (replyTo) {
+    payload.replyTo = { email: replyTo };
+  }
+
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'content-type': 'application/json',
+      'api-key': apiKey
     },
-    // Hard timeouts so a stalled SMTP connection can never hang the request.
-    connectionTimeout: 10000, // 10s to establish the connection
-    greetingTimeout: 10000,   // 10s to receive the SMTP greeting
-    socketTimeout: 15000      // 15s of socket inactivity
+    body: JSON.stringify(payload)
   });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Brevo API ${res.status}: ${text}`);
+  }
+  return res.json().catch(() => ({}));
 };
 
 exports.submitContact = async (req, res) => {
@@ -41,24 +65,19 @@ exports.submitContact = async (req, res) => {
     });
 
     // ── Background email (does not block the response above) ──
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      console.error('Email not configured: EMAIL_USER / EMAIL_PASSWORD missing. Message saved only.');
+    if (!process.env.BREVO_API_KEY) {
+      console.error('Email not configured: BREVO_API_KEY missing. Message saved only.');
       return;
     }
 
-    // With Brevo, EMAIL_USER is the SMTP *login* (e.g. xxxx@smtp-brevo.com),
-    // which is NOT a valid sender. The "from" address must be a sender you've
-    // verified in Brevo, so default to your real address, configurable via env.
-    const VERIFIED_SENDER = 'fahada00698@gmail.com';
-    const fromAddress = process.env.EMAIL_FROM || VERIFIED_SENDER;
-    const notifyAddress = process.env.EMAIL_TO || VERIFIED_SENDER;
-    const transporter = createTransporter();
+    const notifyAddress = process.env.EMAIL_TO || 'fahada00698@gmail.com';
 
-    // Notification to site owner — a friendly "from" name, your verified address.
-    transporter.sendMail({
-      from: `"Portfolio Contact" <${fromAddress}>`,
+    // Notification to site owner — reply-to is the visitor so you can reply directly.
+    sendEmail({
       to: notifyAddress,
+      toName: 'Fahad Ali',
       replyTo: email,
+      senderName: 'Portfolio Contact',
       subject: `Portfolio Contact: ${subject}`,
       html: `<h2>New Contact Form Submission</h2>
         <p><strong>Name:</strong> ${name}</p>
@@ -132,10 +151,11 @@ exports.submitContact = async (req, res) => {
       </body>
     </html>`;
 
-    transporter.sendMail({
-      from: `"Fahad Ali" <${fromAddress}>`,
+    sendEmail({
       to: email,
+      toName: safeName,
       replyTo: notifyAddress, // visitor's reply comes back to your inbox
+      senderName: 'Fahad Ali',
       subject: 'Thanks for reaching out — Fahad Ali',
       html: autoReplyHtml
     }).catch(err => console.error('Auto-reply email failed:', err.message));
@@ -159,5 +179,54 @@ exports.getAllContacts = async (req, res) => {
   } catch (error) {
     console.error('Error fetching contacts:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch contacts' });
+  }
+};
+
+// Diagnostic endpoint: checks config and attempts a real send via the
+// Brevo HTTP API, returning the actual error so email problems are visible
+// in the browser instead of hidden in server logs. Admin-guarded.
+exports.testEmail = async (req, res) => {
+  const report = {
+    env: {
+      BREVO_API_KEY: !!process.env.BREVO_API_KEY,
+      EMAIL_FROM: process.env.EMAIL_FROM || '(unset — defaults to fahada00698@gmail.com)',
+      EMAIL_TO: process.env.EMAIL_TO || '(unset — defaults to fahada00698@gmail.com)'
+    }
+  };
+
+  if (!process.env.BREVO_API_KEY) {
+    return res.status(400).json({
+      success: false,
+      step: 'config',
+      message: 'BREVO_API_KEY is not set on the server. Create one in Brevo → SMTP & API → API Keys, then add it as an env var.',
+      report
+    });
+  }
+
+  const toAddress = process.env.EMAIL_TO || 'fahada00698@gmail.com';
+
+  try {
+    const result = await sendEmail({
+      to: toAddress,
+      toName: 'Fahad Ali',
+      senderName: 'Portfolio Test',
+      subject: 'Test email from your portfolio',
+      html: '<p>If you received this, your email configuration is working correctly.</p>'
+    });
+    return res.json({
+      success: true,
+      step: 'send',
+      message: `Test email sent to ${toAddress}. Check your inbox (and spam).`,
+      result,
+      report
+    });
+  } catch (err) {
+    return res.status(502).json({
+      success: false,
+      step: 'send',
+      message: 'Brevo API send failed. Check BREVO_API_KEY and that EMAIL_FROM is a verified sender in Brevo.',
+      error: err.message,
+      report
+    });
   }
 };

@@ -6,9 +6,6 @@ import './Contact.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
 
-// Small helper: pause for `ms` milliseconds.
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const validate = (formData) => {
   const errors = {};
   if (!formData.name.trim()) errors.name = 'Name is required';
@@ -69,57 +66,34 @@ const Contact = () => {
     setLoading(true);
     setStatus({ type: '', message: '' });
 
-    // The server may be cold-starting on a free host, so the first request
-    // can be slow. We give it a generous timeout and retry once before
-    // giving up, surfacing a "waking up" note while it works.
-    const MAX_ATTEMPTS = 2;
-    const TIMEOUT_MS = 60000; // 60s per attempt — enough for a cold start
-
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      try {
-        if (attempt > 1) {
-          setStatus({ type: 'info', message: 'Still sending — the server is waking up, hang tight…' });
-        }
-        const response = await axios.post(
-          `${API_URL}/api/contact`,
-          formData,
-          { timeout: TIMEOUT_MS }
-        );
-        if (response.data && response.data.success) {
-          setSubmitted(true);
-          setFormData({ name: '', email: '', subject: '', message: '' });
-          setTouched({});
-          setErrors({});
-          setStatus({ type: '', message: '' });
-          // Scroll the success message into view so the user sees it immediately.
-          setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-          setLoading(false);
-          return;
-        }
-        // Responded but not a success payload — don't retry, surface the issue.
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/contact`,
+        formData,
+        { timeout: 30000 }
+      );
+      if (response.data && response.data.success) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTouched({});
+        setErrors({});
+        setStatus({ type: '', message: '' });
+        // Scroll the success message into view so the user sees it immediately.
+        setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+      } else {
         setStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
-        setLoading(false);
-        return;
-      } catch (error) {
-        const isTimeout = error.code === 'ECONNABORTED';
-        const isNetwork = !error.response; // no response at all (server asleep / unreachable)
-        const canRetry = (isTimeout || isNetwork) && attempt < MAX_ATTEMPTS;
-
-        if (canRetry) {
-          // Brief pause to let the server finish booting, then retry.
-          await wait(1500);
-          continue;
-        }
-
-        setStatus({
-          type: 'error',
-          message: isTimeout || isNetwork
-            ? "The server is taking longer than usual to respond. Please try again in a moment — or email me directly at fahada00698@gmail.com."
-            : error.response?.data?.message || 'Failed to send. Please try again.'
-        });
-        setLoading(false);
-        return;
       }
+    } catch (error) {
+      const isTimeout = error.code === 'ECONNABORTED';
+      const isNetwork = !error.response;
+      setStatus({
+        type: 'error',
+        message: isTimeout || isNetwork
+          ? "Couldn't reach the server. Please try again, or email me directly at fahada00698@gmail.com."
+          : error.response?.data?.message || 'Failed to send. Please try again.'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 

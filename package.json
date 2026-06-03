@@ -13,12 +13,14 @@
   "keywords": ["portfolio", "mern", "react", "node", "express", "mongodb"],
   "author": "Fahad Ali",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "mongoose": "^7.6.3",
     "dotenv": "^16.3.1",
     "cors": "^2.8.5",
-    "nodemailer": "^6.9.7",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "express-rate-limit": "^7.1.5"
