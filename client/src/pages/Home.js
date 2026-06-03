@@ -32,7 +32,7 @@ const FALLBACK_PROJECTS = [
     description:
       'A polished, fully deployed e-commerce frontend built across nine modules — catalog, cart, checkout, account pages, and an admin dashboard.',
     technologies: ['Next.js 15', 'TypeScript', 'Tailwind CSS'],
-    githubUrl: 'https://github.com/fahadali0077/MERNShop',
+    githubUrl: 'https://github.com/fahadali0077/MERN-SHOP',
     liveUrl: 'https://mern-shop-swart.vercel.app/',
     imageUrl: '/mernshop.png',
     category: ['Full-Stack'],
