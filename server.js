@@ -63,15 +63,18 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Keep-alive self-ping (only in production, only if a URL is configured).
-// Prevents free-tier hosts like Render from spinning the service down.
-if (process.env.NODE_ENV === 'production' && process.env.SELF_PING_URL) {
+// Keep-alive self-ping. Prevents free-tier hosts like Render from spinning
+// the service down after inactivity. Render injects RENDER_EXTERNAL_URL
+// automatically, so this works with zero config; SELF_PING_URL can override.
+const KEEP_ALIVE_URL = process.env.SELF_PING_URL || process.env.RENDER_EXTERNAL_URL;
+if (process.env.NODE_ENV === 'production' && KEEP_ALIVE_URL) {
   const https = require('https');
+  // Render sleeps after ~15 min idle; ping every ~13 min to stay ahead of it.
   setInterval(() => {
-    https.get(`${process.env.SELF_PING_URL}/api/health`, (res) => {
+    https.get(`${KEEP_ALIVE_URL}/api/health`, (res) => {
       console.log('Self-ping:', res.statusCode);
     }).on('error', (e) => console.error('Ping error:', e.message));
-  }, 10 * 60 * 1000);
+  }, 13 * 60 * 1000);
 }
 
 app.listen(PORT, () => {

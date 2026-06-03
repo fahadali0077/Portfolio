@@ -298,6 +298,12 @@ textarea.form-input {
   color: var(--color-error);
 }
 
+.status-message.info {
+  background: rgba(124,99,237,0.10);
+  border: 1px solid rgba(124,99,237,0.35);
+  color: var(--color-purple-light);
+}
+
 /* Submit Button */
 .submit-btn {
   width: 100%;
