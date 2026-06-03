@@ -662,6 +662,7 @@
   background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
   border-radius: 10px;
   position: relative;
+  box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
 }
 
 .skill-progress::after {

@@ -8,6 +8,7 @@ import { useInView } from 'react-intersection-observer';
 import axios from 'axios';
 import { Magnetic, CountUp, Spotlight } from '../components/Effects';
 import TechMarquee from '../components/TechMarquee';
+import ParticleField from '../components/ParticleField';
 import './Home.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
@@ -32,7 +33,7 @@ const FALLBACK_PROJECTS = [
     description:
       'A polished, fully deployed e-commerce frontend built across nine modules — catalog, cart, checkout, account pages, and an admin dashboard.',
     technologies: ['Next.js 15', 'TypeScript', 'Tailwind CSS'],
-    githubUrl: 'https://github.com/fahadali0077/MERN-SHOP',
+    githubUrl: 'https://github.com/fahadali0077/MERNShop',
     liveUrl: 'https://mern-shop-swart.vercel.app/',
     imageUrl: '/mernshop.png',
     category: ['Full-Stack'],
@@ -114,6 +115,7 @@ const Home = () => {
     <div className="home">
       {/* ===== HERO ===== */}
       <section className="hero section">
+        <ParticleField />
         <motion.div
           className="container"
           style={{ y: heroY, opacity: heroOpacity }}
@@ -404,37 +406,56 @@ const SkillCategory = ({ title, icon, skills, inView, delay }) => {
     <Spotlight
       as={motion.div}
       className="skill-category card"
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay }}
+      initial={{ opacity: 0, y: 40, scale: 0.96, filter: 'blur(6px)' }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' } : {}}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -8 }}
     >
       <div className="skill-category-header">
-        <div className="skill-icon">{icon}</div>
-        <h3>{title}</h3>
+        <motion.div
+          className="skill-icon"
+          initial={{ scale: 0, rotate: -45 }}
+          animate={inView ? { scale: 1, rotate: 0 } : {}}
+          transition={{ delay: delay + 0.15, type: 'spring', stiffness: 220, damping: 14 }}
+        >
+          {icon}
+        </motion.div>
+        <motion.h3
+          initial={{ opacity: 0, x: -12 }}
+          animate={inView ? { opacity: 1, x: 0 } : {}}
+          transition={{ delay: delay + 0.25 }}
+        >
+          {title}
+        </motion.h3>
       </div>
       <div className="skill-list">
-        {skills.map((skill, index) => (
-          <motion.div
-            key={skill._id}
-            className="skill-item"
-            initial={{ opacity: 0, x: -20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: delay + index * 0.08 + 0.3 }}
-          >
-            <div className="skill-header">
-              <span className="skill-name">{skill.name}</span>
-              <span className="skill-pct">{skill.proficiency}%</span>
-            </div>
-            <div className="skill-bar">
-              <motion.div
-                className="skill-progress"
-                initial={{ width: 0 }}
-                animate={inView ? { width: `${skill.proficiency}%` } : {}}
-                transition={{ duration: 1.2, delay: delay + index * 0.08 + 0.4, ease: [0.4, 0, 0.2, 1] }}
-              />
-            </div>
-          </motion.div>
-        ))}
+        {skills.map((skill, index) => {
+          const itemDelay = delay + index * 0.1 + 0.3;
+          return (
+            <motion.div
+              key={skill._id}
+              className="skill-item"
+              initial={{ opacity: 0, x: -20 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: itemDelay }}
+            >
+              <div className="skill-header">
+                <span className="skill-name">{skill.name}</span>
+                <span className="skill-pct">
+                  <CountUp value={`${skill.proficiency}%`} duration={1.2} />
+                </span>
+              </div>
+              <div className="skill-bar">
+                <motion.div
+                  className="skill-progress"
+                  initial={{ width: 0 }}
+                  animate={inView ? { width: `${skill.proficiency}%` } : {}}
+                  transition={{ duration: 1.2, delay: itemDelay + 0.1, ease: [0.4, 0, 0.2, 1] }}
+                />
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </Spotlight>
   );

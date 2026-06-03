@@ -41,15 +41,10 @@ class ErrorBoundary extends React.Component {
 /* ─── Back to Top Button ─── */
 const BackToTop = () => {
   const [visible, setVisible] = useState(false);
-  const [scrollPct, setScrollPct] = useState(0);
 
   useEffect(() => {
     const onScroll = () => {
-      const scrolled = window.scrollY;
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = total > 0 ? Math.min(scrolled / total, 1) : 0;
-      setScrollPct(pct);
-      setVisible(scrolled > 400);
+      setVisible(window.scrollY > 400);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -58,11 +53,6 @@ const BackToTop = () => {
   const handleClick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // SVG ring progress
-  const radius = 20;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - scrollPct);
 
   return (
     <AnimatePresence>
@@ -78,18 +68,6 @@ const BackToTop = () => {
           whileHover={{ scale: 1.12 }}
           whileTap={{ scale: 0.92 }}
         >
-          {/* Circular progress ring */}
-          <svg className="btt-ring" viewBox="0 0 50 50" aria-hidden="true">
-            {/* Track */}
-            <circle cx="25" cy="25" r={radius} className="btt-ring-track" />
-            {/* Progress */}
-            <circle
-              cx="25" cy="25" r={radius}
-              className="btt-ring-progress"
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-            />
-          </svg>
           {/* Arrow icon */}
           <svg className="btt-arrow" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 19V5M5 12l7-7 7 7" strokeLinecap="round" strokeLinejoin="round" />
