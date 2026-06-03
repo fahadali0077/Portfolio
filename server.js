@@ -79,7 +79,7 @@ if (process.env.NODE_ENV === 'production' && KEEP_ALIVE_URL) {
     https.get(`${KEEP_ALIVE_URL}/api/health`, (res) => {
       console.log('Self-ping:', res.statusCode);
     }).on('error', (e) => console.error('Ping error:', e.message));
-  }, 13 * 60 * 1000);
+  }, 07 * 60 * 1000);
 }
 
 app.listen(PORT, () => {
