@@ -29,7 +29,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio')
+// serverSelectionTimeoutMS makes a connection problem (bad URI, Atlas IP
+// allowlist missing this host, etc.) fail fast with a clear error instead
+// of buffering queries until the client times out.
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio', {
+  serverSelectionTimeoutMS: 10000
+})
   .then(() => console.log('✓ MongoDB connected successfully'))
   .catch(err => console.error('✗ MongoDB connection error:', err));
 
