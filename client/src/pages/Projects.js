@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt, FaFilter } from 'react-icons/fa';
 import axios from 'axios';
+import { Magnetic, Spotlight } from '../components/Effects';
 import './Projects.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
@@ -132,7 +133,8 @@ const Projects = () => {
 };
 
 const ProjectCard = ({ project, index }) => (
-  <motion.div
+  <Spotlight
+    as={motion.div}
     className="project-detail-card card"
     layout
     initial={{ opacity: 0, y: 30, scale: 0.97 }}
@@ -214,32 +216,36 @@ const ProjectCard = ({ project, index }) => (
 
       <div className="project-actions">
         {project.githubUrl && (
-          <motion.a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <FaGithub /> GitHub
-          </motion.a>
+          <Magnetic strength={0.3}>
+            <motion.a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <FaGithub /> GitHub
+            </motion.a>
+          </Magnetic>
         )}
         {project.liveUrl && (
-          <motion.a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-primary"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <FaExternalLinkAlt /> Live Demo
-          </motion.a>
+          <Magnetic strength={0.3}>
+            <motion.a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <FaExternalLinkAlt /> Live Demo
+            </motion.a>
+          </Magnetic>
         )}
       </div>
     </div>
-  </motion.div>
+  </Spotlight>
 );
 
 export default Projects;

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import { ScrollProgressBar } from './components/Effects';
 import './App.css';
 
 // Bug 18 — Code splitting: each page loads only when navigated to
@@ -260,6 +261,7 @@ function App() {
   return (
     <Router>
       <CustomCursor />
+      <ScrollProgressBar />
 
       {/* Background */}
       <div className="bg-pattern" aria-hidden="true">

@@ -9,6 +9,63 @@
   overflow: hidden;
 }
 
+/* ── Scroll-down indicator ── */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 2;
+}
+.scroll-indicator-text {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.scroll-mouse {
+  width: 24px;
+  height: 38px;
+  border: 1.5px solid var(--color-border-light);
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+.scroll-wheel {
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px rgba(0, 255, 170, 0.6);
+}
+
+@media (max-width: 768px) {
+  .scroll-indicator { display: none; }
+}
+
+/* ── Tech marquee section ── */
+.marquee-section {
+  padding: 1rem 0 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+.marquee-caption {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+
 .hero-content {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;

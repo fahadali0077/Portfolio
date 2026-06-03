@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaGithub, FaLinkedin, FaCheckCircle, FaExclamationCircle, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
+import { Spotlight } from '../components/Effects';
 import './Contact.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
@@ -168,7 +169,8 @@ const Contact = () => {
 
             <div className="info-cards">
               {contactInfo.map((info, i) => (
-                <motion.div
+                <Spotlight
+                  as={motion.div}
                   key={info.label}
                   className="info-card"
                   initial={{ opacity: 0, x: -20 }}
@@ -190,7 +192,7 @@ const Contact = () => {
                       : <p>{info.value}</p>
                     }
                   </div>
-                </motion.div>
+                </Spotlight>
               ))}
             </div>
 

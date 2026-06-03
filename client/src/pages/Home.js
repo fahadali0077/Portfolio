@@ -6,6 +6,8 @@ import { FaGithub, FaArrowRight, FaCode, FaDatabase, FaTools, FaServer, FaVial, 
 import { HiOutlineLocationMarker } from 'react-icons/hi';
 import { useInView } from 'react-intersection-observer';
 import axios from 'axios';
+import { Magnetic, CountUp, Spotlight } from '../components/Effects';
+import TechMarquee from '../components/TechMarquee';
 import './Home.css';
 
 const API_URL = process.env.REACT_APP_API_URL || '';
@@ -158,12 +160,16 @@ const Home = () => {
               </motion.p>
 
               <motion.div className="hero-cta" variants={itemVariants}>
-                <Link to="/projects" className="btn btn-primary">
-                  View My Work <FaArrowRight />
-                </Link>
-                <Link to="/contact" className="btn btn-outline">
-                  Get In Touch
-                </Link>
+                <Magnetic strength={0.4}>
+                  <Link to="/projects" className="btn btn-primary">
+                    View My Work <FaArrowRight />
+                  </Link>
+                </Magnetic>
+                <Magnetic strength={0.4}>
+                  <Link to="/contact" className="btn btn-outline">
+                    Get In Touch
+                  </Link>
+                </Magnetic>
               </motion.div>
             </div>
 
@@ -235,6 +241,32 @@ const Home = () => {
             </motion.div>
           </motion.div>
         </motion.div>
+
+        {/* Animated scroll-down cue */}
+        <motion.div
+          className="scroll-indicator"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8, duration: 0.8 }}
+          aria-hidden="true"
+        >
+          <span className="scroll-indicator-text">scroll</span>
+          <div className="scroll-mouse">
+            <motion.div
+              className="scroll-wheel"
+              animate={{ y: [0, 10, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ===== TECH MARQUEE ===== */}
+      <section className="marquee-section" aria-label="Technology stack">
+        <div className="container">
+          <p className="marquee-caption">My toolkit</p>
+        </div>
+        <TechMarquee />
       </section>
 
       {/* ===== ABOUT ===== */}
@@ -284,7 +316,8 @@ const Home = () => {
                 { num: '15+', label: 'Technologies' },
                 { num: '4', label: 'Live Deployments' },
               ].map((stat, i) => (
-                <motion.div
+                <Spotlight
+                  as={motion.div}
                   key={stat.label}
                   className="stat-card"
                   initial={{ opacity: 0, y: 20 }}
@@ -292,9 +325,9 @@ const Home = () => {
                   transition={{ delay: 0.3 + i * 0.15 }}
                   whileHover={{ scale: 1.03 }}
                 >
-                  <h3 className="stat-number">{stat.num}</h3>
+                  <h3 className="stat-number"><CountUp value={stat.num} /></h3>
                   <p className="stat-label">{stat.label}</p>
-                </motion.div>
+                </Spotlight>
               ))}
             </div>
           </div>
@@ -368,7 +401,8 @@ const Home = () => {
 const SkillCategory = ({ title, icon, skills, inView, delay }) => {
   if (!skills || skills.length === 0) return null;
   return (
-    <motion.div
+    <Spotlight
+      as={motion.div}
       className="skill-category card"
       initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -402,17 +436,19 @@ const SkillCategory = ({ title, icon, skills, inView, delay }) => {
           </motion.div>
         ))}
       </div>
-    </motion.div>
+    </Spotlight>
   );
 };
 
 const ProjectCard = ({ project, index }) => (
-  <motion.div
+  <Spotlight
+    as={motion.div}
     className="project-card card"
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay: index * 0.12, duration: 0.6 }}
+    whileHover={{ y: -8 }}
   >
     <div className="project-image">
       {project.imageUrl
@@ -458,7 +494,7 @@ const ProjectCard = ({ project, index }) => (
         ))}
       </div>
     </div>
-  </motion.div>
+  </Spotlight>
 );
 
 export default Home;
