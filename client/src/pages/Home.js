@@ -314,7 +314,7 @@ const Home = () => {
 
             <div className="about-sidebar">
               {[
-                { num: '4+', label: 'Projects Built' },
+                { num: '6+', label: 'Projects Built' },
                 { num: '15+', label: 'Technologies' },
                 { num: '4', label: 'Live Deployments' },
               ].map((stat, i) => (
