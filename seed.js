@@ -32,7 +32,7 @@ const projects = [
     ],
     githubUrl: 'https://github.com/fahadali0077/SkillSeal',
     liveUrl: 'https://skillseal.tech',
-    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800',
+    imageUrl: '/skillseal.png',
     category: ['AI/ML', 'Full-Stack'],
     featured: true,
     order: 1,
