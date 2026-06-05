@@ -51,7 +51,7 @@ const projects = [
     ],
     githubUrl: 'https://github.com/fahadali0077/MERN-School-Management-System',
     liveUrl: 'https://www.school-management-system.me/',
-    imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=800',
+    imageUrl: '/schoolms.png',
     category: ['Full-Stack'],
     featured: true,
     order: 2,
