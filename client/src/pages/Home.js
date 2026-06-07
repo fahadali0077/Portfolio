@@ -35,7 +35,7 @@ const FALLBACK_PROJECTS = [
     technologies: ['Next.js 15', 'TypeScript', 'Tailwind CSS'],
     githubUrl: 'https://github.com/fahadali0077/MERNShop',
     liveUrl: 'https://mern-shop-swart.vercel.app/',
-    imageUrl: '/mernshop.png',
+    imageUrl: '/mernshop.jpg',
     category: ['Full-Stack'],
   },
   {
