@@ -45,7 +45,7 @@ const FALLBACK_PROJECTS = [
       "An AI-powered bilingual platform that detects dysgraphia indicators in children's handwriting, supporting English and Urdu with real-time diagnostic feedback.",
     technologies: ['React', 'Python', 'TensorFlow'],
     githubUrl: null,
-    liveUrl: 'https://earlywrite.vercel.app/',
+    liveUrl: 'https://earlywrite-ruddy.vercel.app/',
     imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800',
     category: ['AI/ML', 'Frontend'],
   },
