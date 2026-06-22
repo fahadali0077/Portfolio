@@ -68,9 +68,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Keep-alive self-ping. Prevents free-tier hosts like Render from spinning
-// the service down after inactivity. Render injects RENDER_EXTERNAL_URL
-// automatically, so this works with zero config; SELF_PING_URL can override.
 const KEEP_ALIVE_URL = process.env.SELF_PING_URL || process.env.RENDER_EXTERNAL_URL;
 if (process.env.NODE_ENV === 'production' && KEEP_ALIVE_URL) {
   const https = require('https');

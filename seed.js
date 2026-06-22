@@ -105,9 +105,6 @@ const skills = [
   { name: 'CSS3', category: 'Frontend', proficiency: 90, order: 6 },
   { name: 'Tailwind CSS', category: 'Frontend', proficiency: 88, order: 7 },
   { name: 'Redux', category: 'Frontend', proficiency: 85, order: 8 },
-  { name: 'Zustand', category: 'Frontend', proficiency: 85, order: 9 },
-  { name: 'TanStack Query', category: 'Frontend', proficiency: 82, order: 10 },
-  { name: 'Bootstrap', category: 'Frontend', proficiency: 85, order: 11 },
 
   { name: 'Node.js', category: 'Backend', proficiency: 90, order: 1 },
   { name: 'Express.js', category: 'Backend', proficiency: 90, order: 2 },
@@ -125,14 +122,7 @@ const skills = [
   { name: 'GitHub', category: 'Tools', proficiency: 90, order: 2 },
   { name: 'VS Code', category: 'Tools', proficiency: 95, order: 3 },
   { name: 'Postman', category: 'Tools', proficiency: 90, order: 4 },
-  { name: 'Docker', category: 'Tools', proficiency: 70, order: 5 },
-  { name: 'NPM', category: 'Tools', proficiency: 90, order: 6 },
-  { name: 'Webpack', category: 'Tools', proficiency: 75, order: 7 },
-
-  { name: 'Selenium WebDriver', category: 'Testing', proficiency: 80, order: 1 },
-  { name: 'WebDriverIO', category: 'Testing', proficiency: 75, order: 2 },
-  { name: 'Mocha', category: 'Testing', proficiency: 70, order: 3 },
-  { name: 'Unit Testing', category: 'Testing', proficiency: 75, order: 4 },
+  { name: 'NPM', category: 'Tools', proficiency: 90, order: 5 },
 ];
 
 /**
