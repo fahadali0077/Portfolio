@@ -298,7 +298,7 @@ const Home = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
             >
               <p>
-                I'm a Computer Science student at the University of Engineering and Technology, Lahore,
+                I'm a Computer Science graduate from the University of Engineering and Technology, Lahore, 
                 specializing in full-stack web development with the MERN stack.
               </p>
               <p>
